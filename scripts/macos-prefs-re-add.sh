@@ -1,8 +1,11 @@
 #!/bin/sh
-# Export macOS app preferences into macos/prefs/ as XML plists.
-# Runs automatically after `chezmoi re-add` on macOS (hook in
-# home/.chezmoi.toml.tmpl); can also be run by hand. Commit the result.
-# `chezmoi apply` imports them back (see home/.chezmoiscripts).
+# Mac -> repo: save the settings of the apps in macos/prefs/apps into
+# macos/prefs/ as XML plists. Runs automatically after `chezmoi re-add` on
+# macOS (hook in home/.chezmoi.toml.tmpl); can also be run by hand.
+# Commit the result.
+#
+# Repo -> Mac is the counterpart, run by `chezmoi apply`:
+# home/.chezmoiscripts/run_onchange_after_macos-prefs-apply.sh.tmpl
 #
 # Volatile keys (update checks, window frames, version stamps) are stripped
 # so the files only change when a real setting changes.
@@ -35,5 +38,5 @@ d = {k: v for k, v in d.items()
 sys.stdout.buffer.write(plistlib.dumps(d, fmt=plistlib.FMT_XML, sort_keys=True))
 ' > "$out/$domain.plist.tmp"
   mv "$out/$domain.plist.tmp" "$out/$domain.plist"
-  echo "exported: $domain"
+  echo "saved: $domain"
 done

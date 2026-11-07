@@ -1,4 +1,5 @@
 # Apps whose preferences are synced: <app name> <preferences domain>
-# Used by scripts/export-macos-prefs.sh and the chezmoi import script.
+# Used by scripts/macos-prefs-re-add.sh (Mac -> repo) and
+# home/.chezmoiscripts/run_onchange_after_macos-prefs-apply.sh.tmpl (repo -> Mac).
 Rectangle com.knollsoft.Rectangle
 UnnaturalScrollWheels com.theron.UnnaturalScrollWheels

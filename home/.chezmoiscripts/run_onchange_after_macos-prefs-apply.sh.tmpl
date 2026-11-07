@@ -1,7 +1,8 @@
 {{ if eq .chezmoi.os "darwin" -}}
 #!/bin/sh
-# Import app prefs exported by scripts/export-macos-prefs.sh.
-# Re-runs whenever one of the exported files changes:
+# Repo -> Mac: load the settings in macos/prefs/ into the apps.
+# Counterpart of scripts/macos-prefs-re-add.sh (Mac -> repo).
+# Runs during `chezmoi apply` whenever one of these files changes:
 {{- $prefs := joinPath .chezmoi.workingTree "macos/prefs" }}
 {{- $apps := list }}
 {{- range $line := include (joinPath $prefs "apps") | splitList "\n" }}
@@ -12,7 +13,7 @@
 {{- end }}
 {{- range $apps }}
 {{-   $plist := joinPath $prefs (printf "%s.plist" (index . 1)) }}
-# {{ index . 1 }} {{ if stat $plist }}{{ include $plist | sha256sum }}{{ else }}not exported{{ end }}
+# {{ index . 1 }} {{ if stat $plist }}{{ include $plist | sha256sum }}{{ else }}not saved yet{{ end }}
 {{- end }}
 set -eu
 
