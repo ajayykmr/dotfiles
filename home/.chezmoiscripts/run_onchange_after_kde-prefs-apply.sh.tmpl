@@ -1,0 +1,120 @@
+{{ if and (eq .chezmoi.os "linux") (contains "KDE" (env "XDG_CURRENT_DESKTOP")) -}}
+#!/bin/bash
+# Repo -> KDE: load the settings in fedora/prefs/ into KDE and Konsole.
+# Counterpart of scripts/kde-prefs-re-add.sh (KDE -> repo).
+# Writes only the keys listed there; everything else in the files is left alone.
+# Rendered empty outside a KDE session, so an apply over SSH or from a TTY
+# skips it without marking it done.
+# Runs during `chezmoi apply` whenever one of these files changes:
+{{- $prefs := joinPath .chezmoi.workingTree "fedora/prefs" }}
+# kde {{ include (joinPath $prefs "kde") | sha256sum }}
+# konsole-shortcuts {{ include (joinPath $prefs "konsole-shortcuts") | sha256sum }}
+set -euo pipefail
+
+prefs={{ $prefs | quote }}
+
+# 1. Global theme. Sets color scheme, application style, cursors, Plasma theme
+#    and window decoration. Skipped when already active, so it never resets
+#    anything on a machine that is set up. Panels are never touched.
+laf=com.github.vinceliuice.Layan
+if [[ $(kreadconfig6 --file kdeglobals --group KDE --key LookAndFeelPackage) != "$laf" ]]; then
+  plasma-apply-lookandfeel -a "$laf"
+fi
+
+# 2. Each line of fedora/prefs/kde: <file> <group> <key> <value>, tab-separated.
+while IFS=$'\t' read -r file group key value; do
+  [[ -z $file || $file == \#* ]] && continue
+  case $file in
+    "~/"*) path="$HOME/${file#\~/}" ;;
+    *)     path="$HOME/.config/$file" ;;
+  esac
+  mkdir -p "$(dirname "$path")"
+  # [A][B] -> --group A --group B
+  groups=()
+  g=${group#[}; g=${g%]}
+  IFS=$'\x1f' read -r -a parts <<< "${g//][/$'\x1f'}"
+  for part in "${parts[@]}"; do groups+=(--group "$part"); done
+  if [[ $value == "(default)" ]]; then
+    kwriteconfig6 --notify --file "$path" "${groups[@]}" --key "$key" --delete
+  else
+    kwriteconfig6 --notify --file "$path" "${groups[@]}" --key "$key" "$value"
+  fi
+done < "$prefs/kde"
+
+# 3. Touchpads. KDE stores touchpad settings per device (vendor and product ID),
+#    so write them for whichever touchpads this machine has.
+python3 -I - <<'EOF' | while IFS=$'\t' read -r vendor product name; do
+import re
+for block in open("/proc/bus/input/devices").read().split("\n\n"):
+    m_id = re.search(r"^I: .*Vendor=([0-9a-f]+) Product=([0-9a-f]+)", block, re.M)
+    m_name = re.search(r'^N: Name="(.*)"', block, re.M)
+    if m_id and m_name and "touchpad" in m_name.group(1).lower():
+        print(int(m_id.group(1), 16), int(m_id.group(2), 16), m_name.group(1), sep="\t")
+EOF
+  for kv in NaturalScroll=true ClickMethod=2 ScrollFactor=0.1; do
+    kwriteconfig6 --notify --file kcminputrc --group Libinput --group "$vendor" \
+      --group "$product" --group "$name" --key "${kv%%=*}" "${kv#*=}"
+  done
+  echo "Touchpad settings written for: $name"
+done
+
+# 4. GTK theme: KDE's GtkConfig also sets gsettings, which GTK apps on Wayland
+#    and Flatpaks read. settings.ini alone is not enough.
+gtk_theme=$(kreadconfig6 --file "$HOME/.config/gtk-3.0/settings.ini" --group Settings --key gtk-theme-name)
+if [[ -n $gtk_theme ]]; then
+  qdbus-qt6 org.kde.GtkConfig /GtkConfig org.kde.GtkConfig.setGtkTheme "$gtk_theme" >/dev/null || true
+fi
+
+# 5. Konsole shortcuts (fedora/prefs/konsole-shortcuts). The UI files are XML,
+#    so kwriteconfig6 can't edit them. Set only the listed <Action> entries in
+#    <ActionProperties>; leave the rest of the file as Konsole wrote it. A
+#    missing file gets a minimal one with a low version, which KDE merges into
+#    Konsole's built-in menus.
+python3 -I - "$prefs/konsole-shortcuts" "$HOME/.local/share/kxmlgui5/konsole" <<'EOF'
+import os, re, sys
+from xml.sax.saxutils import quoteattr
+
+shortcuts_file, ui_dir = sys.argv[1], sys.argv[2]
+gui_names = {"konsoleui": "konsole", "sessionui": "session"}
+
+wanted = {}
+for line in open(shortcuts_file):
+    if not line.strip() or line.lstrip().startswith("#"):
+        continue
+    ui, action, shortcut = line.rstrip("\n").split("\t")
+    wanted.setdefault(ui, []).append((action, shortcut))
+
+for ui, actions in wanted.items():
+    path = os.path.join(ui_dir, ui + ".rc")
+    if os.path.exists(path):
+        text = open(path, encoding="utf-8").read()
+    else:
+        text = ("<!DOCTYPE gui SYSTEM 'kpartgui.dtd'>\n"
+                f'<gui name="{gui_names[ui]}" version="1">\n</gui>\n')
+    if '<ActionProperties scheme="Default">' not in text:
+        text = text.replace("</gui>", ' <ActionProperties scheme="Default">\n </ActionProperties>\n</gui>', 1)
+    start = text.index('<ActionProperties scheme="Default">')
+    end = text.index("</ActionProperties>", start)
+    block = text[start:end]
+    for action, shortcut in actions:
+        line_re = re.compile(r'[ \t]*<Action name=%s[^>]*/>\n?' % re.escape(quoteattr(action)))
+        new = "" if shortcut == "(default)" else f"  <Action name={quoteattr(action)} shortcut={quoteattr(shortcut)}/>\n"
+        if line_re.search(block):
+            block = line_re.sub(lambda m: new, block, count=1)
+        elif new:
+            # Insert before </ActionProperties>, keeping its indentation.
+            head = block.rstrip(" \t")
+            indent = block[len(head):]
+            if not head.endswith("\n"):
+                head += "\n"
+            block = head + new + indent
+    text = text[:start] + block + text[end:]
+    os.makedirs(ui_dir, exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(text)
+EOF
+
+# 6. Let KWin reload its settings now; the rest applies at the next login.
+qdbus-qt6 org.kde.KWin /KWin reconfigure >/dev/null 2>&1 || true
+echo "KDE settings applied. Log out and back in for all of them to take effect."
+{{ end -}}

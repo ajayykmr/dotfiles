@@ -1,0 +1,111 @@
+# KDE settings synced by this repo: only the ones changed from the defaults.
+# One per line, tab-separated: <file> <group> <key> <value>
+#   file   relative to ~/.config, or a path starting with ~/
+#   group  nested groups written as [A][B]
+#   value  "(default)" removes the key, so KDE falls back to its default. re-add
+#          writes it only when no config file sets the key: a setting reset to a
+#          default that the global theme provides is saved as that value instead
+#          (same result)
+# repo -> KDE: home/.chezmoiscripts/run_onchange_after_kde-prefs-apply.sh.tmpl (chezmoi apply)
+# KDE -> repo: scripts/kde-prefs-re-add.sh (chezmoi re-add; refreshes values, prints hints)
+# To track another setting, add its line here (re-add prints ready-to-paste hints).
+
+# Fonts, icons, default browser, file dialog
+kdeglobals	[General]	BrowserApplication	brave-browser.desktop
+kdeglobals	[General]	XftHintStyle	hintfull
+kdeglobals	[General]	XftSubPixel	rgb
+kdeglobals	[Icons]	Theme	Tela-dark
+kdeglobals	[KFileDialog Settings]	Show hidden files	true
+
+# Default browser for links opened from other apps
+mimeapps.list	[Default Applications]	text/html	brave-browser.desktop
+mimeapps.list	[Default Applications]	x-scheme-handler/http	brave-browser.desktop
+mimeapps.list	[Default Applications]	x-scheme-handler/https	brave-browser.desktop
+
+# Window effects (blur, translucency), screen edges, Night Color, Alt+Tab
+kwinrc	[Plugins]	blurEnabled	true
+kwinrc	[Plugins]	sheetEnabled	true
+kwinrc	[Plugins]	translucencyEnabled	true
+kwinrc	[Effect-blur]	BlurStrength	3
+kwinrc	[Effect-blur]	NoiseStrength	1
+kwinrc	[Effect-overview]	BorderActivate	9
+kwinrc	[ElectricBorders]	BottomRight	ShowDesktop
+kwinrc	[NightColor]	Active	true
+kwinrc	[TabBox]	LayoutName	thumbnail_grid
+kwinrc	[TabBox]	ActivitiesMode	0
+kwinrc	[TabBox]	DesktopMode	0
+kwinrc	[TabBox]	ShowDesktopMode	1
+kwinrc	[EdgeBarrier]	EdgeBarrier	0
+
+# Power: closing the lid only turns off the laptop screen (LidAction 64; it turns
+# back on when the lid opens), no auto-suspend, dim/off timers, profiles
+powerdevilrc	[AC][SuspendAndShutdown]	LidAction	64
+powerdevilrc	[AC][SuspendAndShutdown]	AutoSuspendAction	0
+powerdevilrc	[AC][Performance]	PowerProfile	balanced
+powerdevilrc	[AC][Keyboard]	KeyboardBrightness	52
+powerdevilrc	[Battery][SuspendAndShutdown]	LidAction	64
+powerdevilrc	[Battery][SuspendAndShutdown]	AutoSuspendAction	0
+powerdevilrc	[Battery][Display]	DimDisplayIdleTimeoutSec	300
+powerdevilrc	[Battery][Display]	TurnOffDisplayIdleTimeoutSec	600
+powerdevilrc	[Battery][Performance]	PowerProfile	power-saver
+powerdevilrc	[LowBattery][SuspendAndShutdown]	LidAction	64
+powerdevilrc	[LowBattery][SuspendAndShutdown]	AutoSuspendAction	0
+powerdevilrc	[LowBattery][Display]	DimDisplayIdleTimeoutSec	300
+powerdevilrc	[LowBattery][Display]	TurnOffDisplayIdleTimeoutSec	600
+powerdevilrc	[LowBattery][Display]	UseProfileSpecificDisplayBrightness	false
+powerdevilrc	[LowBattery][Performance]	PowerProfile	power-saver
+powerdevilrc	[BatteryManagement]	BatteryLowLevel	25
+powerdevilrc	[BatteryManagement]	BatteryCriticalLevel	10
+
+# Konsole window and tabs
+konsolerc	[Desktop Entry]	DefaultProfile	Profile 1.profile
+konsolerc	[KonsoleWindow]	RememberWindowSize	false
+konsolerc	[MainWindow]	MenuBar	Enabled
+konsolerc	[Notification Messages]	CloseAllEmptyTabs	true
+konsolerc	[Notification Messages]	CloseAllTabs	true
+konsolerc	[Notification Messages]	CloseSingleTab	true
+konsolerc	[SplitView]	SplitDragHandleSize	SplitDragHandleMedium
+konsolerc	[TabBar]	CloseTabOnMiddleMouseButton	true
+konsolerc	[TabBar]	NewTabBehavior	PutNewTabAfterCurrentTab
+
+# Konsole profile (font from .chezmoiexternal.toml.tmpl)
+~/.local/share/konsole/Profile 1.profile	[General]	Name	Profile 1
+~/.local/share/konsole/Profile 1.profile	[General]	Parent	FALLBACK/
+~/.local/share/konsole/Profile 1.profile	[General]	LocalTabTitleFormat	%d : %n
+~/.local/share/konsole/Profile 1.profile	[General]	TerminalColumns	100
+~/.local/share/konsole/Profile 1.profile	[General]	TerminalRows	25
+~/.local/share/konsole/Profile 1.profile	[Appearance]	ColorScheme	Layan
+~/.local/share/konsole/Profile 1.profile	[Appearance]	Font	CaskaydiaCove Nerd Font Mono,18,-1,5,400,0,0,0,0,0,0,0,0,0,0,1,,0,0
+~/.local/share/konsole/Profile 1.profile	[Appearance]	UseFontLineChararacters	true
+~/.local/share/konsole/Profile 1.profile	[Interaction Options]	AutoCopySelectedText	true
+
+# Splash screen (Kuro, installed by kde-install-themes)
+ksplashrc	[KSplash]	Theme	a2n.kuro
+
+# Kvantum application style theme
+Kvantum/kvantum.kvconfig	[General]	theme	Layan
+
+# GTK theme (apply also pushes it to gsettings via KDE GtkConfig)
+gtk-3.0/settings.ini	[Settings]	gtk-theme-name	Layan-Dark
+
+# Layan Plasma theme fix: translucent popups and notifications
+~/.local/share/plasma/desktoptheme/Layan/plasmarc	[AdaptiveTransparency]	enabled	true
+
+# Mouse extra button opens Meta+Tab, NumLock on at login (NumLock 0; 1 is off, 2 is
+# leave unchanged). Touchpads are detected by apply
+kcminputrc	[ButtonRebinds][Mouse]	ExtraButton1	Key,Meta+Tab
+kcminputrc	[Keyboard]	NumLock	0
+
+# Clipboard history
+klipperrc	[General]	MaxClipItems	200
+klipperrc	[General]	SaveImages	true
+
+# Notifications
+plasmanotifyrc	[Notifications]	PopupPosition	TopRight
+plasmanotifyrc	[Notifications]	PopupTimeout	3000
+
+# Dolphin
+dolphinrc	[General]	AutoExpandFolders	true
+
+# KRunner
+krunnerrc	[General]	FreeFloating	true

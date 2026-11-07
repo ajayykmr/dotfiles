@@ -1,1 +1,5 @@
 **/.DS_Store
+{{- if ne .chezmoi.os "linux" }}
+# Konsole (KDE) color scheme: Linux only
+.local/share/konsole
+{{- end }}

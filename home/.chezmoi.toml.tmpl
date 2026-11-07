@@ -5,4 +5,10 @@ sourceDir = {{ .chezmoi.workingTree | quote }}
 # repo, so one command pulls every local change in.
 [hooks.re-add.post]
     command = {{ joinPath .chezmoi.workingTree "scripts/macos-prefs-re-add.sh" | quote }}
+{{- else if eq .chezmoi.os "linux" }}
+
+# `chezmoi re-add` also saves the KDE settings and Konsole shortcuts listed in
+# fedora/prefs/ into the repo, and prints other KDE settings that changed.
+[hooks.re-add.post]
+    command = {{ joinPath .chezmoi.workingTree "scripts/kde-prefs-re-add.sh" | quote }}
 {{- end }}

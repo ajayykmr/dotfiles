@@ -1,0 +1,8 @@
+# Konsole shortcuts synced by this repo, tab-separated: <ui file> <action> <shortcut>
+#   ui file  konsoleui (window actions) or sessionui (terminal actions), the files in
+#            ~/.local/share/kxmlgui5/konsole/
+#   value    "(default)" removes the override, so Konsole uses its built-in shortcut
+# Applied and saved by the same scripts as fedora/prefs/kde.
+
+konsoleui	new-tab	Ctrl+T
+sessionui	edit_paste	Ctrl+V

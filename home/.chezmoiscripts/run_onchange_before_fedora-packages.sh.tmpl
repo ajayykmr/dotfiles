@@ -1,0 +1,81 @@
+{{ if and (eq .chezmoi.os "linux") (eq .chezmoi.osRelease.id "fedora") -}}
+#!/bin/sh
+# Install what's missing from fedora/packages and fedora/flatpaks, with the
+# repos they need. Never upgrades or removes anything. Also makes zsh the
+# login shell. Asks for the sudo password. Re-runs whenever one of these
+# files changes:
+{{- $fedora := joinPath .chezmoi.workingTree "fedora" }}
+# packages {{ include (joinPath $fedora "packages") | sha256sum }}
+# flatpaks {{ include (joinPath $fedora "flatpaks") | sha256sum }}
+{{- range $repo := glob (joinPath $fedora "repos/*") }}
+# repos/{{ base $repo }} {{ include $repo | sha256sum }}
+{{- end }}
+set -eu
+
+fedora_dir={{ $fedora | quote }}
+
+# Lines of a list file, without comments and blank lines.
+list() { grep -v -E '^[[:space:]]*(#|$)' "$1" | sed 's/[[:space:]]*$//'; }
+
+# Repo IDs already configured, e.g. from another file name.
+has_repo() { grep -qs "^\[$1\]" /etc/yum.repos.d/*.repo; }
+
+# RPM Fusion free and nonfree (Steam, Discord, NVIDIA driver live in nonfree).
+rpmfusion=""
+for kind in free nonfree; do
+  rpm -q "rpmfusion-$kind-release" >/dev/null 2>&1 ||
+    rpmfusion="$rpmfusion https://mirrors.rpmfusion.org/$kind/fedora/rpmfusion-$kind-release-$(rpm -E %fedora).noarch.rpm"
+done
+if [ -n "$rpmfusion" ]; then
+  # shellcheck disable=SC2086
+  sudo dnf install -y $rpmfusion
+fi
+
+# Vendor repos (Brave, VS Code, Google Cloud CLI, cloudflared, GitHub Desktop).
+for repo in "$fedora_dir"/repos/*.repo; do
+  id=$(sed -n 's/^\[\(.*\)\]$/\1/p' "$repo" | head -n 1)
+  has_repo "$id" || sudo install -m 644 "$repo" /etc/yum.repos.d/
+done
+
+# COPR repos.
+for copr in $(list "$fedora_dir/repos/coprs"); do
+  has_repo "copr:copr.fedorainfracloud.org:$(echo "$copr" | tr / :)" ||
+    sudo dnf copr enable -y "$copr"
+done
+
+# dnf packages. --whatprovides also matches names like nodejs that another
+# package provides.
+missing=""
+for pkg in $(list "$fedora_dir/packages"); do
+  rpm -q --whatprovides "$pkg" >/dev/null 2>&1 || missing="$missing $pkg"
+done
+if [ -n "$missing" ]; then
+  echo "dnf: installing$missing"
+  # shellcheck disable=SC2086
+  sudo dnf install -y $missing
+fi
+
+# Flathub, unfiltered (Fedora adds it with a filter that hides some apps).
+if ! flatpak remotes --system --columns=name | grep -qx flathub; then
+  sudo flatpak remote-add --system flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+fi
+if flatpak remotes --system --columns=name,options | grep -E '^flathub[[:space:]]' | grep -q filtered; then
+  sudo flatpak remote-modify --system --no-filter flathub
+fi
+missing=""
+for app in $(list "$fedora_dir/flatpaks"); do
+  flatpak info "$app" >/dev/null 2>&1 || missing="$missing $app"
+done
+if [ -n "$missing" ]; then
+  echo "flatpak: installing$missing"
+  # shellcheck disable=SC2086
+  sudo flatpak install -y --system flathub $missing
+fi
+
+# zsh as the login shell (takes effect at the next login).
+zsh_path=$(command -v zsh)
+if [ "$(getent passwd "$(id -un)" | cut -d: -f7)" != "$zsh_path" ]; then
+  sudo usermod -s "$zsh_path" "$(id -un)"
+  echo "Login shell set to $zsh_path. Log out and back in to use it."
+fi
+{{ end -}}

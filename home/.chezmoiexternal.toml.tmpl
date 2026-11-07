@@ -26,3 +26,15 @@
 [".oh-my-zsh/custom/plugins/zsh-completions"]
   type = "git-repo"
   url = "https://github.com/zsh-users/zsh-completions.git"
+{{- if eq .chezmoi.os "linux" }}
+
+# CaskaydiaCove Nerd Font (Cascadia Code with Nerd Font icons), used by Konsole
+# and VS Code. TrueType from the Nerd Fonts release: VS Code on Linux doesn't
+# pick up Fedora's cascadia-code-nf-fonts (CFF .otf). Downloaded once; to
+# update, change the version in the URL. exact: files not listed are removed.
+[".local/share/fonts/CaskaydiaCove"]
+  type = "archive"
+  url = "https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/CascadiaCode.zip"
+  exact = true
+  include = ["CaskaydiaCoveNerdFont-*.ttf", "CaskaydiaCoveNerdFontMono-*.ttf", "LICENSE"]
+{{- end }}

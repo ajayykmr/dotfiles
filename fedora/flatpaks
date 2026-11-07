@@ -1,0 +1,8 @@
+# Flathub apps installed by chezmoi apply on Fedora (only the missing ones;
+# system-wide). One app ID per line.
+# Script: home/.chezmoiscripts/run_onchange_before_fedora-packages.sh.tmpl
+com.bilingify.readest
+com.bitwarden.desktop
+com.github.Matoking.protontricks
+com.spotify.Client
+it.mijorus.gearlever

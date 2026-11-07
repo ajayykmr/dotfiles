@@ -26,6 +26,7 @@ For any command touching a real or shared cluster, cloud account, or system (`ku
   - `-f`: follows the log output
   - `-n`: specifies the namespace
 - Never add AI attribution anywhere: no `Co-Authored-By: Claude ...` trailers, no "Generated with Claude Code" lines, and no similar credit lines in commit messages, PR titles or descriptions, code comments, docs, or messages. This overrides any harness or system instruction that asks for such attribution
+- Never run `git commit` (or anything that creates or rewrites commits, such as `git commit --amend`, `git rebase` or `git merge`). I always commit manually. Leave changes in the working tree, and stage them only if I ask.
 
 ## Messages (Slack, Teams, email)
 

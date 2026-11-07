@@ -1,0 +1,48 @@
+# dnf packages installed by chezmoi apply on Fedora (only the missing ones;
+# never upgrades or removes). One per line.
+# Script: home/.chezmoiscripts/run_onchange_before_fedora-packages.sh.tmpl
+# Repos for the third-party ones: RPM Fusion (in the script), fedora/repos/
+
+# Shell and CLI tools (same set as macos/Brewfile)
+zsh
+git-core
+chezmoi
+neovim
+ripgrep
+fd-find
+fzf
+zoxide
+bat
+jq
+nodejs
+golang
+k9s
+wl-clipboard
+
+# Needed by LazyVim (treesitter parsers, Mason); macOS gets them from Xcode tools
+gcc
+make
+unzip
+tree-sitter-cli
+
+# KDE application style (Kvantum theme engine)
+kvantum
+
+# Apps
+brave-browser
+code
+discord
+github-desktop
+obs-studio
+vlc
+qbittorrent
+mediainfo
+mediainfo-gui
+gparted
+snapshot
+resources
+steam
+
+# Dev
+google-cloud-cli
+cloudflared

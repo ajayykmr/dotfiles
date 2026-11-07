@@ -1,0 +1,3 @@
+# COPR repos enabled by chezmoi apply on Fedora. One <owner>/<project> per line.
+# Script: home/.chezmoiscripts/run_onchange_before_fedora-packages.sh.tmpl
+atim/resources
