@@ -22,8 +22,18 @@ if [[ $(kreadconfig6 --file kdeglobals --group KDE --key LookAndFeelPackage) != 
 fi
 
 # 2. Each line of fedora/prefs/kde: <file> <group> <key> <value>, tab-separated.
-while IFS=$'\t' read -r file group key value; do
-  [[ -z $file || $file == \#* ]] && continue
+#    Lines without exactly 4 fields are skipped with a warning.
+n=0
+while IFS= read -r line; do
+  n=$((n + 1))
+  trimmed=${line#"${line%%[![:space:]]*}"}
+  [[ -z $trimmed || $trimmed == \#* ]] && continue
+  tabs=${line//[^$'\t']/}
+  if (( ${#tabs} != 3 )); then
+    echo "skipped fedora/prefs/kde:$n: expected 4 tab-separated fields, found $(( ${#tabs} + 1 ))" >&2
+    continue
+  fi
+  IFS=$'\t' read -r file group key value <<< "$line"
   case $file in
     "~/"*) path="$HOME/${file#\~/}" ;;
     *)     path="$HOME/.config/$file" ;;
@@ -78,10 +88,15 @@ shortcuts_file, ui_dir = sys.argv[1], sys.argv[2]
 gui_names = {"konsoleui": "konsole", "sessionui": "session"}
 
 wanted = {}
-for line in open(shortcuts_file):
+for n, line in enumerate(open(shortcuts_file, encoding="utf-8"), 1):
     if not line.strip() or line.lstrip().startswith("#"):
         continue
-    ui, action, shortcut = line.rstrip("\n").split("\t")
+    parts = line.rstrip("\n").split("\t")
+    if len(parts) != 3 or parts[0] not in gui_names:
+        print(f"skipped fedora/prefs/konsole-shortcuts:{n}: expected <konsoleui|sessionui>"
+              f" <action> <shortcut>, tab-separated: {line.rstrip()!r}", file=sys.stderr)
+        continue
+    ui, action, shortcut = parts
     wanted.setdefault(ui, []).append((action, shortcut))
 
 for ui, actions in wanted.items():

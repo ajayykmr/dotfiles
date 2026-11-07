@@ -79,7 +79,7 @@ konsolerc	[TabBar]	NewTabBehavior	PutNewTabAfterCurrentTab
 ~/.local/share/konsole/Profile 1.profile	[Appearance]	UseFontLineChararacters	true
 ~/.local/share/konsole/Profile 1.profile	[Interaction Options]	AutoCopySelectedText	true
 
-# Splash screen (Kuro, installed by kde-install-themes)
+# Splash screen (Kuro, installed by kde-themes-install)
 ksplashrc	[KSplash]	Theme	a2n.kuro
 
 # Kvantum application style theme

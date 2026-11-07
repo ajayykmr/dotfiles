@@ -1,0 +1,71 @@
+{{ if and (eq .chezmoi.os "linux") (contains "KDE" (env "XDG_CURRENT_DESKTOP")) -}}
+#!/bin/sh
+# Install the themes the KDE settings use, only the ones that are missing:
+# Layan (Plasma, window decoration, colors, Kvantum), Layan GTK, Layan cursors,
+# Tela icons and the Kuro splash screen. Runs on every `chezmoi apply`, before
+# kde-prefs-apply (an after_ script) selects them; with everything installed it
+# only checks the folders below.
+#
+# Rendered empty outside a KDE session, so an apply over SSH or from a TTY
+# skips it.
+#
+# A failed install (e.g. offline) prints a warning but doesn't stop the apply;
+# the next apply tries again.
+#
+# To update a theme, delete its folder (see the checks below) and run
+# `chezmoi apply`, then rerun the prefs apply: reinstalling Layan overwrites
+# the transparency fix in fedora/prefs/kde.
+set -eu
+
+# Where each installer writes: ~/.local/share, except Layan GTK and Layan
+# cursors (see below).
+data="$HOME/.local/share"
+tmp=$(mktemp -d)
+trap 'rm -rf "$tmp"' EXIT
+
+# get <github owner/repo>: shallow clone into $tmp/<repo> and cd into it.
+get() {
+  git clone -q --depth 1 "https://github.com/$1.git" "$tmp/${1#*/}"
+  cd "$tmp/${1#*/}"
+}
+
+# found <dir>...: true if any of the folders exists.
+found() {
+  for d in "$@"; do
+    [ -d "$d" ] && return 0
+  done
+  return 1
+}
+
+warn() { echo "Warning: installing $1 failed; the next chezmoi apply retries" >&2; }
+
+if ! found "$data/plasma/look-and-feel/com.github.vinceliuice.Layan"; then
+  echo "Installing Layan KDE theme"
+  (get vinceliuice/Layan-kde && ./install.sh) || warn "Layan KDE theme"
+fi
+
+if ! found "$data/icons/Tela-dark"; then
+  echo "Installing Tela icons"
+  # -c: folder colors follow the Plasma color scheme
+  (get vinceliuice/Tela-icon-theme && ./install.sh -c) || warn "Tela icons"
+fi
+
+# The Layan GTK installer uses $XDG_DATA_HOME/themes when set, else ~/.themes
+# if it exists, else ~/.local/share/themes.
+if ! found "$data/themes/Layan-Dark" "$HOME/.themes/Layan-Dark" ${XDG_DATA_HOME:+"$XDG_DATA_HOME/themes/Layan-Dark"}; then
+  echo "Installing Layan GTK theme"
+  # -l: also theme libadwaita (GTK4) apps
+  (get vinceliuice/Layan-gtk-theme && ./install.sh -c dark -l) || warn "Layan GTK theme"
+fi
+
+if ! found "$data/icons/Layan-white-cursors" "$HOME/.icons/Layan-white-cursors"; then
+  echo "Installing Layan cursors"
+  (get vinceliuice/Layan-cursors && ./install.sh) || warn "Layan cursors"
+fi
+
+if ! found "$data/plasma/look-and-feel/a2n.kuro"; then
+  echo "Installing Kuro splash screen"
+  mkdir -p "$data/plasma/look-and-feel"
+  (get bouteillerAlan/kuro && cp -r a2n.kuro "$data/plasma/look-and-feel/") || warn "Kuro splash screen"
+fi
+{{ end -}}

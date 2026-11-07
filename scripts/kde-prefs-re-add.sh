@@ -40,11 +40,21 @@ def group_args(group):
     return args
 
 
-def data_lines(path):
-    """(index, fields) for each non-comment line of a tab-separated prefs file."""
+def data_lines(path, fields):
+    """(index, fields) for each non-comment line of a tab-separated prefs file.
+    Lines without exactly `fields` tab-separated fields are skipped with a
+    warning, and left in the file unchanged."""
     lines = open(path, encoding="utf-8").read().split("\n")
-    rows = [(i, line.split("\t")) for i, line in enumerate(lines)
-            if line.strip() and not line.lstrip().startswith("#")]
+    rows = []
+    for i, line in enumerate(lines):
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        parts = line.split("\t")
+        if len(parts) != fields:
+            print(f"skipped {path}:{i + 1}: expected {fields} tab-separated fields, "
+                  f"found {len(parts)}: {line!r}", file=sys.stderr)
+            continue
+        rows.append((i, parts))
     return lines, rows
 
 
@@ -55,7 +65,7 @@ def save(path, lines):
 
 # KDE settings
 kde_path = os.path.join(prefs_dir, "kde")
-lines, rows = data_lines(kde_path)
+lines, rows = data_lines(kde_path, 4)
 tracked = set()
 for i, (file, group, key, value) in rows:
     tracked.add((file, group, key))
@@ -71,7 +81,7 @@ save(kde_path, lines)
 # Konsole shortcuts
 ui_dir = os.path.join(home, ".local/share/kxmlgui5/konsole")
 shortcuts_path = os.path.join(prefs_dir, "konsole-shortcuts")
-lines, rows = data_lines(shortcuts_path)
+lines, rows = data_lines(shortcuts_path, 3)
 for i, (ui, action, value) in rows:
     current = DEFAULT
     ui_path = os.path.join(ui_dir, ui + ".rc")
