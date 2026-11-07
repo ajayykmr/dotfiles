@@ -17,8 +17,8 @@
 # the transparency fix in fedora/prefs/kde.
 set -eu
 
-# Where each installer writes: ~/.local/share, except Layan GTK and Layan
-# cursors (see below).
+# Where each installer writes: ~/.local/share, except Layan GTK (see below).
+# Cursors are also looked for in ~/.icons, where older installs put them.
 data="$HOME/.local/share"
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT

@@ -86,8 +86,8 @@ chezmoi diff
 chezmoi apply
 ```
 
-`apply` asks for the sudo password. Log out and back in afterwards, for the login shell and
-the KDE settings.
+`apply` asks for the sudo password when there's something to install. Log out and back in
+afterwards, for the login shell and the KDE settings.
 
 ### What apply does
 

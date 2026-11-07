@@ -52,19 +52,6 @@ if (( $+commands[fd] )); then
 fi
 (( $+commands[bat] )) && export FZF_CTRL_T_OPTS="--preview 'bat --color=always --style=numbers --line-range=:300 {}'"
 
-{{ if eq .chezmoi.os "linux" -}}
-# ── ls colors ───────────────────────────────────────────────────────────────
-# The default colors for world-writable folders (blue or black on green, e.g.
-# NTFS mounts and /tmp) are unreadable with the Layan terminal colors. Use
-# white on dark orange/green/blue instead. Later entries in LS_COLORS win.
-# Set before Oh My Zsh, which reuses LS_COLORS for completion lists.
-if (( $+commands[dircolors] )); then
-  eval "$(dircolors -b)"
-  export LS_COLORS="${LS_COLORS}:tw=01;37;48;2;140;70;0:ow=01;37;48;2;0;90;0:st=01;37;48;2;0;0;120"
-fi
-
-{{ end -}}
-
 # ── Oh My Zsh ───────────────────────────────────────────────────────────────
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="powerlevel10k/powerlevel10k"

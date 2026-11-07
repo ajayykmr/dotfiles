@@ -16,15 +16,25 @@ prefs={{ $prefs | quote }}
 # 1. Global theme. Sets color scheme, application style, cursors, Plasma theme
 #    and window decoration. Skipped when already active, so it never resets
 #    anything on a machine that is set up. Panels are never touched.
+#    If the theme isn't installed (its install failed, e.g. offline), the other
+#    settings are still applied, and the script fails at the end so that chezmoi
+#    doesn't mark it done and the next apply tries again.
 laf=com.github.vinceliuice.Layan
+laf_missing=0
 if [[ $(kreadconfig6 --file kdeglobals --group KDE --key LookAndFeelPackage) != "$laf" ]]; then
-  plasma-apply-lookandfeel -a "$laf"
+  if plasma-apply-lookandfeel --list | grep -Fx "$laf" >/dev/null; then
+    plasma-apply-lookandfeel -a "$laf"
+  else
+    echo "Warning: global theme $laf isn't installed; applying the other settings" >&2
+    laf_missing=1
+  fi
 fi
 
 # 2. Each line of fedora/prefs/kde: <file> <group> <key> <value>, tab-separated.
 #    Lines without exactly 4 fields are skipped with a warning.
 n=0
-while IFS= read -r line; do
+# `|| [[ -n $line ]]`: also read a last line that has no trailing newline.
+while IFS= read -r line || [[ -n $line ]]; do
   n=$((n + 1))
   trimmed=${line#"${line%%[![:space:]]*}"}
   [[ -z $trimmed || $trimmed == \#* ]] && continue
@@ -131,5 +141,11 @@ EOF
 
 # 6. Let KWin reload its settings now; the rest applies at the next login.
 qdbus-qt6 org.kde.KWin /KWin reconfigure >/dev/null 2>&1 || true
+
+if (( laf_missing )); then
+  echo "KDE settings applied, except the global theme $laf: it isn't installed" \
+    "(see kde-themes-install above). The next chezmoi apply tries again." >&2
+  exit 1
+fi
 echo "KDE settings applied. Log out and back in for all of them to take effect."
 {{ end -}}
