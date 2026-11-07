@@ -1,0 +1,42 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/bin/sh
+# Import app prefs exported by scripts/export-macos-prefs.sh.
+# Re-runs whenever one of the exported files changes:
+{{- $prefs := joinPath .chezmoi.workingTree "macos/prefs" }}
+{{- $apps := list }}
+{{- range $line := include (joinPath $prefs "apps") | splitList "\n" }}
+{{-   $f := $line | trim | splitList " " | compact }}
+{{-   if and (eq (len $f) 2) (not (hasPrefix "#" $line)) }}
+{{-     $apps = append $apps $f }}
+{{-   end }}
+{{- end }}
+{{- range $apps }}
+{{-   $plist := joinPath $prefs (printf "%s.plist" (index . 1)) }}
+# {{ index . 1 }} {{ if stat $plist }}{{ include $plist | sha256sum }}{{ else }}not exported{{ end }}
+{{- end }}
+set -eu
+
+import_prefs() {
+  app=$1 domain=$2 file="{{ $prefs }}/$2.plist"
+  [ -f "$file" ] || return 0
+  # Match on the executable path: process names are cut to 15 characters.
+  bin="/$app.app/Contents/MacOS/"
+  running=0
+  if pgrep -qf "$bin"; then
+    running=1
+    # SIGTERM instead of AppleScript `quit`, which needs Automation permission.
+    pkill -f "$bin" || true
+    i=0
+    while pgrep -qf "$bin" && [ "$i" -lt 25 ]; do sleep 0.2; i=$((i + 1)); done
+  fi
+  defaults import "$domain" "$file"
+  echo "$app: prefs imported"
+  if [ "$running" = 1 ] || [ -d "/Applications/$app.app" ]; then
+    open -a "$app" || true
+  fi
+}
+
+{{ range $apps -}}
+import_prefs {{ index . 0 | quote }} {{ index . 1 | quote }}
+{{ end -}}
+{{ end -}}

@@ -1,0 +1,28 @@
+# Cloned on first apply if missing. On a machine's first apply, clones that
+# already exist are pulled once; after that they are left alone. oh-my-zsh
+# updates itself, or run `chezmoi apply --refresh-externals`.
+
+[".oh-my-zsh"]
+  type = "git-repo"
+  url = "https://github.com/ohmyzsh/ohmyzsh.git"
+
+[".oh-my-zsh/custom/themes/powerlevel10k"]
+  type = "git-repo"
+  url = "https://github.com/romkatv/powerlevel10k.git"
+  clone.args = ["--depth", "1"]
+
+[".oh-my-zsh/custom/plugins/zsh-autosuggestions"]
+  type = "git-repo"
+  url = "https://github.com/zsh-users/zsh-autosuggestions.git"
+
+[".oh-my-zsh/custom/plugins/zsh-syntax-highlighting"]
+  type = "git-repo"
+  url = "https://github.com/zsh-users/zsh-syntax-highlighting.git"
+
+[".oh-my-zsh/custom/plugins/fzf-tab"]
+  type = "git-repo"
+  url = "https://github.com/Aloxaf/fzf-tab.git"
+
+[".oh-my-zsh/custom/plugins/zsh-completions"]
+  type = "git-repo"
+  url = "https://github.com/zsh-users/zsh-completions.git"

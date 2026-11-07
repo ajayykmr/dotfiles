@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>allowAnyShortcut</key>
+	<true/>
+	<key>alternateDefaultShortcuts</key>
+	<true/>
+	<key>bottomHalf</key>
+	<dict>
+		<key>keyCode</key>
+		<integer>125</integer>
+		<key>modifierFlags</key>
+		<integer>524288</integer>
+	</dict>
+	<key>footprintAnimationDurationMultiplier</key>
+	<real>0.75</real>
+	<key>hapticFeedbackOnSnap</key>
+	<integer>1</integer>
+	<key>hideMenubarIcon</key>
+	<true/>
+	<key>internalTilingNotified</key>
+	<true/>
+	<key>launchOnLogin</key>
+	<true/>
+	<key>reflowTodo</key>
+	<dict>
+		<key>keyCode</key>
+		<integer>45</integer>
+		<key>modifierFlags</key>
+		<integer>786432</integer>
+	</dict>
+	<key>subsequentExecutionMode</key>
+	<integer>1</integer>
+	<key>toggleTodo</key>
+	<dict>
+		<key>keyCode</key>
+		<integer>11</integer>
+		<key>modifierFlags</key>
+		<integer>786432</integer>
+	</dict>
+	<key>topHalf</key>
+	<dict>
+		<key>keyCode</key>
+		<integer>126</integer>
+		<key>modifierFlags</key>
+		<integer>524288</integer>
+	</dict>
+</dict>
+</plist>

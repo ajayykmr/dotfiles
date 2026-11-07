@@ -1,0 +1,17 @@
+# ~/.zshenv: sourced by EVERY zsh invocation: interactive shells, scripts,
+# `zsh -c`, cron, and tool subshells. ~/.zshrc is interactive-only, so
+# environment variables that non-interactive callers need belong here.
+#
+# Keep this file to environment variables. Aliases, functions, prompt config
+# and anything that produces output belong in ~/.zshrc. PATH is set in
+# ~/.zshrc instead (see the note there).
+#
+# Managed by chezmoi. Machine-specific variables go in ~/.zshenv.local.
+
+# Editor for anything that opens one: git commit, kubectl edit, crontab -e,
+# including when started from a script or an IDE rather than a terminal.
+export EDITOR="nvim"
+export VISUAL="nvim"
+export KUBE_EDITOR="nvim"
+
+[[ -f ~/.zshenv.local ]] && source ~/.zshenv.local

@@ -1,0 +1,9 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/bin/sh
+# Point iTerm2 at the prefs folder in the dotfiles repo. iTerm2 reads its
+# settings from there on launch and writes changes back to it.
+set -eu
+defaults write com.googlecode.iterm2 PrefsCustomFolder -string {{ joinPath .chezmoi.workingTree "macos/iterm2" | quote }}
+defaults write com.googlecode.iterm2 LoadPrefsFromCustomFolder -bool true
+echo "iTerm2: prefs folder set. Restart iTerm2 to load it."
+{{ end -}}

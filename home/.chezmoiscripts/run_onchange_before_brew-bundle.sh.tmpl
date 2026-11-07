@@ -1,0 +1,20 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/bin/sh
+# Install anything in macos/Brewfile that is missing. Never upgrades or
+# removes packages. Re-runs whenever the Brewfile changes:
+{{- $brewfile := joinPath .chezmoi.workingTree "macos/Brewfile" }}
+# Brewfile {{ include $brewfile | sha256sum }}
+set -eu
+
+if ! command -v brew >/dev/null 2>&1; then
+  for b in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+    [ -x "$b" ] && eval "$("$b" shellenv)" && break
+  done
+fi
+if ! command -v brew >/dev/null 2>&1; then
+  echo "Homebrew not found. Install it from https://brew.sh, then run chezmoi apply again." >&2
+  exit 1
+fi
+
+brew bundle install --no-upgrade --file={{ $brewfile | quote }}
+{{ end -}}

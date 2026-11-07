@@ -1,0 +1,4 @@
+# Apps whose preferences are synced: <app name> <preferences domain>
+# Used by scripts/export-macos-prefs.sh and the chezmoi import script.
+Rectangle com.knollsoft.Rectangle
+UnnaturalScrollWheels com.theron.UnnaturalScrollWheels
