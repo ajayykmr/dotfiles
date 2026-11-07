@@ -1,6 +1,7 @@
 #!/bin/sh
 # Export macOS app preferences into macos/prefs/ as XML plists.
-# Run this after changing settings in one of these apps, then commit.
+# Runs automatically after `chezmoi re-add` on macOS (hook in
+# home/.chezmoi.toml.tmpl); can also be run by hand. Commit the result.
 # `chezmoi apply` imports them back (see home/.chezmoiscripts).
 #
 # Volatile keys (update checks, window frames, version stamps) are stripped

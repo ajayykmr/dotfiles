@@ -1,1 +1,8 @@
 sourceDir = {{ .chezmoi.workingTree | quote }}
+{{- if eq .chezmoi.os "darwin" }}
+
+# `chezmoi re-add` also exports the app settings synced through `defaults`
+# (macos/prefs/apps), so one command pulls every local change into the repo.
+[hooks.re-add.post]
+    command = {{ joinPath .chezmoi.workingTree "scripts/export-macos-prefs.sh" | quote }}
+{{- end }}

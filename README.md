@@ -56,8 +56,8 @@ chezmoi cd
 
 - `diff`: what `apply` would change in `~`
 - `apply`: write the repo state into `~`
-- `re-add`: pull edits made directly in `~` back into the repo (non-template files only)
+- `re-add`: pull edits made directly in `~` back into the repo (non-template files only).
+  On macOS it also exports Rectangle and UnnaturalScrollWheels settings
+  (`scripts/export-macos-prefs.sh`). iTerm2 saves into the repo by itself.
 - `edit`: edit the source copy; needed for templates (`.zshrc`)
 - `cd`: open a shell in the repo
-
-After changing Rectangle or UnnaturalScrollWheels settings, run `scripts/export-macos-prefs.sh`.
