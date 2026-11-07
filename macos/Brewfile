@@ -2,6 +2,7 @@ cask "iterm2"
 cask "rectangle"
 cask "maccy"
 cask "unnaturalscrollwheels"
+cask "visual-studio-code"
 cask "font-cascadia-code-nf"
 brew "neovim"
 # Used by LazyVim (search, pickers) and Mason (language servers, linters).
