@@ -7,7 +7,8 @@ clone, so you edit files in the repo and `chezmoi apply` writes them into `~`.
 ## What's managed
 
 - **Everywhere:** zsh (`.zshrc`, `.zshenv`, `.p10k.zsh`) with Oh My Zsh, Powerlevel10k and
-  plugins (cloned on first apply), nvim (LazyVim), Claude Code (`~/.claude/CLAUDE.md`)
+  plugins (cloned on first apply), nvim (LazyVim), Claude Code (settings, plugins, skills,
+  `CLAUDE.md`; see [Claude Code](#claude-code))
 - **macOS:** apps and CLI tools from `macos/Brewfile`, iTerm2, Rectangle, UnnaturalScrollWheels
 - **Fedora:** dnf packages, Flathub apps and the repos they need, zsh as the login shell
 - **KDE Plasma:** settings (theme, effects, power, input, Konsole), the themes they use,
@@ -171,6 +172,50 @@ IDs. On each screen:
 
 For another monitor, use "Clone Panel" in the panel's Edit Mode.
 
+## Claude Code
+
+The repo is the source of truth for Claude Code, so the setup is the same on every machine
+and with any claude.ai account.
+
+### What's in the repo
+
+| Repo path (`home/private_dot_claude/`) | What it is |
+|---|---|
+| `settings.json` | Settings, the plugin marketplaces (`extraKnownMarketplaces`) and the plugins to turn on (`enabledPlugins`) |
+| `skills/` | My own skills (`fact-check`, `read-gdocs`) |
+| `CLAUDE.md` | Global instructions |
+
+Tools the plugins need are installed with everything else: `gopls` (for `gopls-lsp`) by
+`run_onchange_after_go-tools`, and `pandoc` and `poppler` (for `document-skills`) from
+`macos/Brewfile` and `fedora/packages`.
+
+Not in the repo:
+
+- **claude.ai connectors (MCP):** added and signed in to at
+  [claude.ai/customize/connectors](https://claude.ai/customize/connectors). Claude Code
+  picks them up when signed in with that account. On a new account, connect them again.
+- **`~/.claude.json`:** Claude Code's own state, including per-project `/mcp` toggles and
+  the Chrome "Enabled by default" setting. Not synced.
+- **Skills and plugins from claude.ai:** sync is off (`syncClaudeAiSkills`,
+  `syncClaudeAiPlugins`), so claude.ai doesn't add copies on top of the repo's.
+
+### New machine
+
+1. `chezmoi apply` writes `~/.claude`.
+2. Start `claude` and sign in.
+3. In that first session, Claude Code clones the marketplaces in `settings.json` and
+   downloads the plugins in the background. Run `/reload-plugins` (or start a new session)
+   to load them, then check with `claude plugin list`.
+
+### Changes
+
+- **Settings and plugins:** change them in Claude Code (`/config`, `/plugin`,
+  `claude plugin install`), which writes `~/.claude/settings.json`. Then
+  `chezmoi re-add ~/.claude/settings.json`. Claude Code may reorder keys; only value
+  changes matter in `git diff`.
+- **A new skill of my own:** add it under `home/private_dot_claude/skills/<name>/` and run
+  `chezmoi apply`. To also use it in claude.ai chat, upload it there from the repo copy.
+
 ## How the repo works
 
 ### Layout
@@ -180,6 +225,7 @@ home/                         chezmoi source, maps to ~ (see .chezmoiroot)
   .chezmoi.toml.tmpl          chezmoi config: source dir, re-add hooks
   .chezmoiexternal.toml.tmpl  Oh My Zsh, Powerlevel10k, zsh plugins, CaskaydiaCove font
   .chezmoiscripts/            setup scripts run by apply
+  private_dot_claude/         Claude Code: settings, skills, CLAUDE.md
 macos/
   Brewfile                    apps and CLI tools
   iterm2/                     iTerm2 prefs, read and written by iTerm2
