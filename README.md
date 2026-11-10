@@ -60,6 +60,7 @@ After the first apply, open a new shell so `~/.local/bin` is on `PATH`.
 | `run_onchange_before_brew-bundle` | installs what's missing from `macos/Brewfile`; never upgrades or removes |
 | `run_once_after_iterm2-prefs-folder` | points iTerm2 at `macos/iterm2/` |
 | `run_onchange_after_macos-prefs-apply` | loads `macos/prefs/` into the apps (restarts them if running) |
+| `run_onchange_after_go-tools` | installs the latest Go tools in its list (`gopls`) with `go install` |
 
 ### App settings
 
@@ -101,6 +102,8 @@ removes anything:
 - zsh as the login shell
 
 It runs again whenever one of those files changes.
+
+`run_onchange_after_go-tools` then installs the Go tools in its list, as on macOS.
 
 ## KDE Plasma
 
@@ -197,8 +200,9 @@ The filename prefix tells chezmoi when to run a script in `home/.chezmoiscripts/
 - `before_` / `after_`: before or after chezmoi writes files. Scripts in the same phase run
   in alphabetical order.
 
-Each script is a template that renders empty on the wrong OS or desktop. chezmoi skips empty
-scripts without recording them, so they run later on a machine where they apply.
+Scripts that apply to only one OS or desktop are templates that render empty elsewhere.
+chezmoi skips empty scripts without recording them, so they run later on a machine where they
+apply.
 
 ### Settings sync
 
