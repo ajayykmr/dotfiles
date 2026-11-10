@@ -18,3 +18,7 @@ brew "bat"
 brew "kubectx"
 brew "k9s"
 brew "jq"
+# Used by the document-skills Claude Code plugin: Word files (pandoc), PDF text
+# and page images (poppler).
+brew "pandoc"
+brew "poppler"

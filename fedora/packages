@@ -19,6 +19,11 @@ golang
 k9s
 wl-clipboard
 
+# Used by the document-skills Claude Code plugin: Word files (pandoc), PDF text
+# and page images (poppler-utils)
+pandoc
+poppler-utils
+
 # Needed by LazyVim (treesitter parsers, Mason); macOS gets them from Xcode tools
 gcc
 make
