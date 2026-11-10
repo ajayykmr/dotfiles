@@ -29,6 +29,8 @@
 	<key>AllowClipboardAccess</key>
 	<true/>
 	<key>ClaudeCodeTriggersInstalled</key>
+	<false/>
+	<key>ClaudeCodeWorkgroupUpsellSuppressed</key>
 	<true/>
 	<key>CodeReviewSavedPrompts</key>
 	<data>
@@ -2273,7 +2275,7 @@
 	<key>DimOnlyText</key>
 	<true/>
 	<key>EnableAPIServer</key>
-	<true/>
+	<false/>
 	<key>EnableDivisionView</key>
 	<true/>
 	<key>FlashTabBarInFullscreen</key>
@@ -3484,52 +3486,7 @@
 			<key>Treat Option as Alt</key>
 			<false/>
 			<key>Triggers</key>
-			<array>
-				<dict>
-					<key>action</key>
-					<string>iTermEnterWorkgroupTrigger</string>
-					<key>contentregex</key>
-					<string></string>
-					<key>disabled</key>
-					<false/>
-					<key>eventParams</key>
-					<dict>
-						<key>jobName</key>
-						<string>claude</string>
-					</dict>
-					<key>matchType</key>
-					<integer>113</integer>
-					<key>parameter</key>
-					<string>builtin.claudeCode</string>
-					<key>partial</key>
-					<false/>
-					<key>regex</key>
-					<string></string>
-				</dict>
-				<dict>
-					<key>action</key>
-					<string>iTermExitWorkgroupTrigger</string>
-					<key>contentregex</key>
-					<string></string>
-					<key>disabled</key>
-					<false/>
-					<key>eventParams</key>
-					<dict>
-						<key>jobName</key>
-						<string>claude</string>
-						<key>leaderOnly</key>
-						<true/>
-					</dict>
-					<key>matchType</key>
-					<integer>114</integer>
-					<key>parameter</key>
-					<string></string>
-					<key>partial</key>
-					<false/>
-					<key>regex</key>
-					<string></string>
-				</dict>
-			</array>
+			<array/>
 			<key>Unicode Normalization</key>
 			<integer>0</integer>
 			<key>Unlimited Scrollback</key>
@@ -3664,33 +3621,7 @@
 	<true/>
 	<key>Workgroups</key>
 	<data>
-	W3sidW5pcXVlSWRlbnRpZmllciI6ImJ1aWx0aW4uY2xhdWRlQ29kZSIsIm5hbWUiOiJD
-	bGF1ZGUgQ29kZSIsInNlc3Npb25zIjpbeyJ1bmlxdWVJZGVudGlmaWVyIjoiYnVpbHRp
-	bi5jbGF1ZGVDb2RlLm1haW4iLCJ1cmxTdHJpbmciOiIiLCJ0b29sYmFySXRlbXMiOlt7
-	ImtpbmQiOiJtb2RlU3dpdGNoZXIifSx7ImtpbmQiOiJnaXRTdGF0dXMifSx7ImtpbmQi
-	OiJhdXRvUmVxdWVzdFJldmlld1doZW5JZGxlIn1dLCJjb21tYW5kIjoiIiwia2luZCI6
-	eyJraW5kIjoicm9vdCJ9LCJkaXNwbGF5TmFtZSI6IkNoYXQiLCJtb2RlIjoicmVndWxh
-	ciIsInBlckZpbGVDb21tYW5kIjoiIn0seyJ1bmlxdWVJZGVudGlmaWVyIjoiYnVpbHRp
-	bi5jbGF1ZGVDb2RlLmRpZmYiLCJ1cmxTdHJpbmciOiIiLCJ0b29sYmFySXRlbXMiOlt7
-	ImtpbmQiOiJtb2RlU3dpdGNoZXIifSx7ImtpbmQiOiJjaGFuZ2VkRmlsZVNlbGVjdG9y
-	In0seyJraW5kIjoiZ2l0QmFzZVNlbGVjdG9yIn0seyJraW5kIjoibmF2aWdhdGlvbiIs
-	ImJhY2tTaG9ydGN1dCI6eyJzZXJpYWxpemVkIjoiMHhmNzAyLTB4MzQwMDAwLTB4N2Ii
-	fSwiZm9yd2FyZFNob3J0Y3V0Ijp7InNlcmlhbGl6ZWQiOiIweGY3MDMtMHgzNDAwMDAt
-	MHg3YyJ9LCJyZWxvYWRTaG9ydGN1dCI6eyJzZXJpYWxpemVkIjoiMHg3Mi0weDEwMDAw
-	MC0weGYifX1dLCJjb21tYW5kIjoiZ2l0IGRpZmZ0b29sIC15IC14IHZpbWRpZmYgXFwo
-	Z2l0QmFzZSkiLCJraW5kIjp7ImtpbmQiOiJwZWVyIn0sImRpc3BsYXlOYW1lIjoiRGlm
-	ZiIsInBhcmVudElEIjoiYnVpbHRpbi5jbGF1ZGVDb2RlLm1haW4iLCJtb2RlIjoiZGlm
-	ZiIsInBlckZpbGVDb21tYW5kIjoiZ2l0IGRpZmZ0b29sIC15IC14IHZpbWRpZmYgXFwo
-	Z2l0QmFzZSkgLS0gXFwoZmlsZSkifSx7InVuaXF1ZUlkZW50aWZpZXIiOiJidWlsdGlu
-	LmNsYXVkZUNvZGUucmV2aWV3IiwidXJsU3RyaW5nIjoiIiwidG9vbGJhckl0ZW1zIjpb
-	eyJraW5kIjoibW9kZVN3aXRjaGVyIn0seyJraW5kIjoicmVsb2FkIiwic2hvcnRjdXQi
-	Onsic2VyaWFsaXplZCI6IjB4NzItMHgxMDAwMDAtMHhmIn19LHsia2luZCI6ImF1dG9T
-	ZW5kQ2xpcHBpbmdzV2hlbklkbGUifV0sImNvbW1hbmQiOiJjbGF1ZGUgXFwoY29kZVJl
-	dmlld1Byb21wdCkgLS1hcHBlbmQtc3lzdGVtLXByb21wdC1maWxlICdcXChjb2RlUmV2
-	aWV3U3lzdGVtUHJvbXB0RmlsZSknIC0tc2V0dGluZ3MgJ1xcKGNvZGVSZXZpZXdTZXR0
-	aW5nc0ZpbGUpJyIsImtpbmQiOnsia2luZCI6InBlZXIifSwiZGlzcGxheU5hbWUiOiJD
-	b2RlIFJldmlldyIsInBhcmVudElEIjoiYnVpbHRpbi5jbGF1ZGVDb2RlLm1haW4iLCJt
-	b2RlIjoiY29kZVJldmlldyIsInBlckZpbGVDb21tYW5kIjoiIn1dfV0=
+	W10=
 	</data>
 	<key>findMode_iTerm</key>
 	<integer>0</integer>
