@@ -22,6 +22,17 @@ mimeapps.list	[Default Applications]	text/html	brave-browser.desktop
 mimeapps.list	[Default Applications]	x-scheme-handler/http	brave-browser.desktop
 mimeapps.list	[Default Applications]	x-scheme-handler/https	brave-browser.desktop
 
+# Default video player: VLC for common formats (mp4/m4v, mkv, webm, mov, avi, wmv,
+# mpg, flv). Each type is the canonical one from shared-mime-info
+mimeapps.list	[Default Applications]	video/mp4	vlc.desktop;
+mimeapps.list	[Default Applications]	video/x-matroska	vlc.desktop;
+mimeapps.list	[Default Applications]	video/webm	vlc.desktop;
+mimeapps.list	[Default Applications]	video/quicktime	vlc.desktop;
+mimeapps.list	[Default Applications]	video/vnd.avi	vlc.desktop;
+mimeapps.list	[Default Applications]	video/x-ms-wmv	vlc.desktop;
+mimeapps.list	[Default Applications]	video/mpeg	vlc.desktop;
+mimeapps.list	[Default Applications]	video/x-flv	vlc.desktop;
+
 # Window effects (blur, translucency), screen edges, Night Color, Alt+Tab
 kwinrc	[Plugins]	blurEnabled	true
 kwinrc	[Plugins]	sheetEnabled	true
@@ -109,3 +120,8 @@ dolphinrc	[General]	AutoExpandFolders	true
 
 # KRunner
 krunnerrc	[General]	FreeFloating	true
+
+# Software updates: install automatically (weekly; applied at the next reboot,
+# Fedora's UseOfflineUpdates default)
+PlasmaDiscoverUpdates	[Global]	UseUnattendedUpdates	true
+PlasmaDiscoverUpdates	[Global]	RequiredNotificationInterval	604800
