@@ -1,203 +1,97 @@
 ---
 name: fact-check
-description: >
-  Verify documents for factual accuracy, ambiguity, and unsupported claims.
-  ONLY trigger this skill when the user explicitly uses the phrase "fact check"
-  or "fact-check" (e.g. "fact check this", "can you fact-check my report",
-  "run a fact check", "fact check against the codebase"). Do NOT trigger for
-  generic review requests like "check this doc", "review this", or "proofread".
-  The trigger phrase must contain the words "fact check" or "fact-check".
+description: Verify a document's claims for factual accuracy, ambiguity and unsupported statements, with drop-in corrections. Use only when the user's request contains "fact check" or "fact-check" (for example "fact check this", "can you fact-check my report", "fact check against the codebase"). Generic requests such as "check this doc", "review this" or "proofread" are not fact checks.
 ---
 
-# Document Reviewer Skill
+# Fact check
 
-Verify all claims in a document and produce a structured markdown report with
-flagged issues and copy-paste-ready corrections. The goal is to give the user
-full confidence that a document is objectively correct before it is finalised.
+Check every claim in a document and report what is false, unverifiable or misleading, each with a correction ready to paste. The goal is a document the user can trust before it goes out.
 
----
+If a `doc-reviewer` subagent is available and you are not it, hand the check to it. Pass the document as a file path it can read, or as text (convert `.docx`, PDF or Google Docs to text first), any codebase or reference material the user named, and, for a re-check, the earlier report. Relay its report. Otherwise, do the check yourself as below.
 
-## When to Use Which Verification Method
+## 1. Pick the document
 
-| Claim Type | Method |
+- Use the files the user named. Several files get one report each.
+- Otherwise use text pasted with the request, or the one document the conversation is working on, and say which you picked.
+- If several documents are in play and none is clearly meant, list them and ask. If there is none, ask for a file or pasted text.
+
+Read the full text, with a document-reading skill or tool for formats like `.docx`, PDF or Google Docs. Check against the codebase the user names; if they ask for a codebase check without naming one, use the current repository and say so.
+
+## 2. List the claims
+
+Make an internal list of every checkable statement. It is working memory; don't output it.
+
+Always check:
+
+- numbers: percentages, counts, dates, durations, versions
+- named things with attributed properties ("Company X has 500 employees", "the default timeout is 30s")
+- standards and specifications ("REST requires stateless communication")
+- causal or comparative claims ("X is faster than Y by 30%")
+- technical assertions: commands, flags, paths, config keys, API behaviour, complexity
+
+Check a subjective statement only when it is presented as objective fact but is contested, contradicts itself or its context, or is too vague to mean anything ("best-in-class", "highly scalable" with no qualifier).
+
+These are not issues: clearly framed opinions ("we believe"), standard hedges ("approximately", "tends to"), internal process descriptions nobody outside can verify, and correct simplifications such as illustrative examples or rounded figures.
+
+## 3. Verify each claim
+
+| Claim type | Check against |
 |---|---|
-| External facts (statistics, dates, product specs, org names, standards) | Web search |
-| Code behaviour, API contracts, system behaviour | Documentation + Codebase (if available) |
-| Subjective or opinion statements | Reason from context -- flag if unclear or unsupported |
-| Internal consistency (e.g. numbers that contradict each other) | Reason within the doc itself |
+| External facts: statistics, dates, product specs, organisations, standards | Web search, primary sources first: official docs, specs, source code, the organisation's own pages. Note each source and its date. If reliable sources conflict, report the conflict |
+| Code, API or system behaviour | The codebase when the user asked for it or named one, then official docs. Cite `file:line` |
+| Internal consistency | The document itself: totals that don't add up, numbers or names that contradict each other |
+| Subjective statements | The context, flagged only under the rule in step 2 |
 
----
+If the relevant code can't be found, mark the claim unverifiable and say the codebase search was inconclusive.
 
-## Step-by-Step Workflow
-
-### 1. Identify the Target Document
-
-Before doing anything else, determine which file to fact-check. Follow this order:
-
-**a. User named specific files** (e.g. "fact check proposal.docx") -- use those, one report each.
-
-**b. Active file in context** -- if the current conversation already references a file (e.g. Claude was just reading, editing, or discussing it), use that file automatically. State which file you picked before proceeding:
-> "Fact-checking `proposal.docx` -- the file we were just working on."
-
-**c. Multiple files in context, none active or named** -- list them and ask:
-> "I can see multiple files. Which ones should I fact-check? I'll produce a separate report for each."
-> - `proposal.docx`
-> - `technical-spec.pdf`
-
-Wait for the user to reply before proceeding.
-
-**d. Single file in context** -- proceed automatically.
-
-**e. Pasted content in the prompt** -- if the user wrote `"fact check: <content>"` or pasted text directly alongside the command, treat that text as the document. No file needed. Use `pasted-content` as the filename in the report header (e.g. `pasted-content-review.md`), saved to the current working directory.
-
-**f. No file and no pasted content** -- ask the user to either attach a file or paste the content directly.
-
-Once the target is confirmed, ingest it:
-
-- `.docx` / `.pdf` -- use the appropriate file-reading skill or tool to extract full text
-- `.md` / `.txt` -- read directly
-- Pasted text -- use as-is from the prompt
-- Note the filename (or `pasted-content`) -- it appears in the report header
-- If the user mentions a codebase, confirm the repo path before proceeding
-
-### 2. Extract All Claims
-
-Read the document and produce an internal list of every checkable statement.
-Do not output this list -- it is working memory only.
-
-**Hard facts to always extract and verify:**
-- Numerical claims (percentages, counts, dates, durations, version numbers)
-- Named entities with attributed properties ("Company X has 500 employees")
-- Standards or specifications ("REST requires stateless communication")
-- Causal or comparative claims ("X is faster than Y by 30%")
-- Technical assertions ("This function runs in O(n log n)")
-
-**Subjective / opinion statements -- flag only if:**
-- The claim is presented as objective fact but is actually contested or opinion
-- The claim contradicts itself or the surrounding context
-- The claim is vague to the point of being meaningless ("best-in-class", "highly scalable" with no qualifier)
-- Leave well-reasoned opinions that are clearly framed as such
-
-**Do not flag:**
-- Clearly framed opinions ("We believe...", "Our view is...")
-- Standard hedged language ("approximately", "roughly", "tends to")
-- Internal process descriptions that are not externally verifiable
-
-### 3. Verify Each Claim
-
-For each extracted claim, determine the right verification method (see table above) and verify:
-
-**Web search:**
-- Search for the specific claim
-- Note the source URL and date if found
-- If conflicting sources exist, note the conflict
-
-**Codebase:**
-- Only if the user has explicitly asked or provided a repo path
-- Look for relevant files, functions, or configs that confirm or contradict the claim
-- Note the file and line reference
-
-**Internal reasoning:**
-- Cross-check numbers within the document (e.g. totals that don't add up)
-- Flag circular or self-referential justifications
-
-### 4. Classify Each Issue
-
-Assign one of three labels:
+## 4. Classify each issue
 
 | Label | Meaning |
 |---|---|
-| `❌ False` | Claim is contradicted by a reliable source or by the codebase |
-| `⚠️ Unverifiable` | Claim could not be confirmed or denied -- no source found |
-| `🔶 Ambiguous` | Claim is subjective, vague, or contested -- not clearly wrong but not clearly right |
+| ❌ False | Contradicted by a reliable source or by the codebase |
+| ⚠️ Unverifiable | No source found that confirms or refutes it |
+| 🔶 Ambiguous | Vague, contested or misleading as written: not clearly wrong, not clearly right |
 
-### 5. Write the Correction
+## 5. Write the corrections
 
-For every flagged issue, write a **Suggested Correction** that:
-- Is a direct drop-in replacement for the original text (complete sentence or phrase)
-- Is clearly bounded so the user or Claude Code can find and replace it precisely
-- Includes a note if the correction requires the user to fill in a specific value (e.g. the real number)
+For each issue, write a drop-in replacement for the original text: a complete sentence or phrase, bounded so it can be found and replaced exactly. If the user has to supply a value (the real number), say so in the correction. If the claim should be removed rather than replaced, say that. A correction never introduces a new unverified claim.
 
-Format the correction as a fenced block so it can be copied directly:
+## 6. Report
 
-```
-Suggested correction:
-
-> [exact replacement text here]
-```
-
-If the claim should simply be removed rather than replaced, say so explicitly.
-
-### 6. Produce the Markdown Report
-
-Save the report to the same directory as the original document, as `<original-filename>-review.md`.
-For example, if the file is at `/projects/docs/proposal.docx`, the report goes to `/projects/docs/proposal-review.md`.
-Never save to the current working directory unless the original file itself is in the cwd.
-
-Use this exact structure:
-
----
+Give the report in the conversation. Write it to a file only when the user asks for one, and then name it `<original-name>-fact-check.md` next to the original.
 
 ```markdown
-# Document Review Report
+# Fact check: <document name>
 
-**File:** `<filename>`
-**Reviewed:** <date>
-**Total claims checked:** <N>
-**Issues found:** <N> (<N> false, <N> unverifiable, <N> ambiguous)
+**Claims checked:** <N>. **Issues:** <N> (<N> false, <N> unverifiable, <N> ambiguous)
 
----
-
-## Summary
-
-<2-4 sentence plain-English summary of the overall confidence level and
-the most important issues found.>
-
----
+<A short summary: overall confidence, and the most important issues.>
 
 ## Issues
 
-### 1. [Short label for the claim]
+### 1. <short label>
 
-**Original text:**
 > <exact quote from the document>
 
 **Verdict:** ❌ False / ⚠️ Unverifiable / 🔶 Ambiguous
 
-**Finding:**
-<Explanation of why this is flagged. Include source URL and date for web-verified
-findings. Include file:line for codebase findings.>
+**Finding:** <why, with the source URL and date, or `file:line`>
 
-**Suggested correction:**
+**Correction:**
+
 > <drop-in replacement text>
-
----
-
-### 2. ...
-
----
-
-## No Issues Found
-
-<If a section or the whole doc is clean, say so explicitly here.>
 ```
 
----
+If nothing is wrong, say so plainly and name the sections checked.
 
-## Codebase Verification (Claude Code Only)
+### Re-checks
 
-If the user says to verify against a codebase:
+When the conversation already has a fact check of the same document, check the current version in full again, then report in two parts:
 
-1. Ask for the repo path if not already known
-2. Use grep, file reads, or symbol search to locate the relevant code
-3. Quote the specific file and line(s) in the finding
-4. Do not assume -- if you cannot find the relevant code, mark the claim as `⚠️ Unverifiable` with a note that the codebase search was inconclusive
+1. **Earlier issues:** each one as fixed, still open, or changed (with its new state).
+2. **New issues:** anything the earlier check didn't report.
 
----
+## Tone
 
-## Tone and Precision
-
-- Be direct. Do not soften findings with excessive hedging.
-- Distinguish clearly between "this is wrong" and "this could not be verified" -- they are different problems.
-- Corrections must be usable as-is. Do not write corrections that themselves contain vague or unverified claims.
-- If you are unsure whether something qualifies as a claim worth checking, err on the side of checking it.
+- Be direct; don't soften findings.
+- When unsure whether a statement is a claim worth checking, check it.
