@@ -13,6 +13,8 @@ fd-find
 fzf
 zoxide
 bat
+eza
+direnv
 jq
 nodejs
 golang

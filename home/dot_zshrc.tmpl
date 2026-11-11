@@ -4,6 +4,11 @@
 # Managed by chezmoi. Edit with `chezmoi edit ~/.zshrc`.
 # Machine-specific or work-only config goes in ~/.zshrc.local (not tracked).
 
+# direnv: load the current folder's .envrc before instant prompt, so its
+# "direnv: loading" output isn't flagged as console output during startup.
+# The direnv plugin below then reloads it on every prompt and cd.
+(( ${+commands[direnv]} )) && emulate zsh -c "$(direnv export zsh)"
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -60,14 +65,26 @@ zstyle ':omz:update' mode reminder  # just remind me to update when it's time
 # sudo:              Esc Esc puts sudo in front of the current/last command
 # extract:           `extract <archive>` unpacks any archive type
 # copypath/copyfile: copy the current path / a file's contents to the clipboard
-plugins=(git kubectl sudo extract colored-man-pages copypath copyfile)
+# gcloud:            gcloud completion; does nothing if the SDK isn't installed
+plugins=(git kubectl sudo extract colored-man-pages copypath copyfile gcloud)
 # Only when the tool is installed, so a missing one can't print warnings.
 (( $+commands[fzf] )) && plugins+=(fzf fzf-tab)  # fzf-tab: Tab opens a fuzzy list
 (( $+commands[zoxide] )) && plugins+=(zoxide)    # `z <part of path>` jumps there
+(( $+commands[direnv] )) && plugins+=(direnv)    # loads a folder's .envrc on cd
+(( $+commands[eza] )) && plugins+=(eza)          # ls, ll, la, lT through eza
+# eza: folders first, a git status column in long listings, and icons (needs a
+# Nerd Font). Read when the plugin loads, so they must be set before it.
+zstyle ':omz:plugins:eza' 'dirs-first' yes
+zstyle ':omz:plugins:eza' 'git-status' yes
+zstyle ':omz:plugins:eza' 'icons' yes
 # These wrap zle widgets, so they go last and in this order: autosuggestions,
 # syntax-highlighting, then history-substring-search (type part of a command,
 # Up/Down cycle through matching history).
 plugins+=(zsh-autosuggestions zsh-syntax-highlighting history-substring-search)
+# Suggest from history first, then from what Tab would complete. The fallback
+# runs the command's completion function in the background as you type; for
+# kubectl and helm that can list objects from the current cluster.
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 
 # Fixed dump name: the default includes $HOST, which can change between
 # networks and forces a full compinit rebuild.
@@ -87,7 +104,11 @@ SAVEHIST=100000
 zstyle ':completion:*' menu no
 zstyle ':completion:*:descriptions' format '[%d]'
 zstyle ':fzf-tab:*' switch-group '<' '>'
-zstyle ':fzf-tab:complete:(cd|__zoxide_z):*' fzf-preview 'ls -1 --color=always $realpath'
+if (( $+commands[eza] )); then
+  zstyle ':fzf-tab:complete:(cd|__zoxide_z):*' fzf-preview 'eza -1 --color=always --icons=always --group-directories-first $realpath'
+else
+  zstyle ':fzf-tab:complete:(cd|__zoxide_z):*' fzf-preview 'ls -1 --color=always $realpath'
+fi
 
 # history-substring-search binds Up/Down via terminfo; also bind the plain
 # escape codes some terminals send.

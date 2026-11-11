@@ -12,13 +12,18 @@ brew "fzf"
 brew "node"
 brew "go"
 brew "pyenv"
-# Shell: `z` folder jumping, cat with syntax highlighting (also fzf previews).
+# Shell: `z` folder jumping, cat with syntax highlighting (also fzf previews),
+# ls with git status and icons, per-folder environment from .envrc files.
 brew "zoxide"
 brew "bat"
+brew "eza"
+brew "direnv"
 brew "kubectx"
 brew "k9s"
 brew "kubernetes-cli"
 brew "helm"
+# gcloud. Fedora: google-cloud-cli from Google's repo (fedora/repos/).
+cask "gcloud-cli"
 brew "jq"
 # Lints shell scripts.
 brew "shellcheck"
