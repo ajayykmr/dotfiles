@@ -11,6 +11,7 @@ fi
 
 for pkg in \
   golang.org/x/tools/gopls \
+  github.com/yannh/kubeconform/cmd/kubeconform \
   ; do
   go install "$pkg@latest"
 done

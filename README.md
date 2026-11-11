@@ -61,7 +61,7 @@ After the first apply, open a new shell so `~/.local/bin` is on `PATH`.
 | `run_onchange_before_brew-bundle` | installs what's missing from `macos/Brewfile`; never upgrades or removes |
 | `run_once_after_iterm2-prefs-folder` | points iTerm2 at `macos/iterm2/` |
 | `run_onchange_after_macos-prefs-apply` | loads `macos/prefs/` into the apps (restarts them if running) |
-| `run_onchange_after_go-tools` | installs the latest Go tools in its list (`gopls`) with `go install` |
+| `run_onchange_after_go-tools` | installs the latest Go tools in its list (`gopls`, `kubeconform`) with `go install` |
 
 ### App settings
 

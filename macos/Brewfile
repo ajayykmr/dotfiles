@@ -17,7 +17,11 @@ brew "zoxide"
 brew "bat"
 brew "kubectx"
 brew "k9s"
+brew "kubernetes-cli"
+brew "helm"
 brew "jq"
+# Lints shell scripts.
+brew "shellcheck"
 # Used by the document-skills Claude Code plugin: Word files (pandoc), PDF text
 # and page images (poppler).
 brew "pandoc"

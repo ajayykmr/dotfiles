@@ -17,7 +17,12 @@ jq
 nodejs
 golang
 k9s
+# kubectl. Fedora packages it per Kubernetes version: bump to match the clusters.
+kubernetes1.35-client
+helm
 wl-clipboard
+# Lints shell scripts.
+ShellCheck
 
 # Used by the document-skills Claude Code plugin: Word files (pandoc), PDF text
 # and page images (poppler-utils)
