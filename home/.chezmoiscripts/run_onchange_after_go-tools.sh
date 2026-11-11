@@ -9,6 +9,10 @@ if [ -x /opt/homebrew/bin/go ]; then
   PATH="/opt/homebrew/bin:$PATH"
 fi
 
+# Let `go install` download a newer Go toolchain when a tool needs one. Fedora
+# sets GOTOOLCHAIN=local, so its older Go would refuse (e.g. gopls needs 1.27).
+export GOTOOLCHAIN=auto
+
 for pkg in \
   golang.org/x/tools/gopls \
   github.com/yannh/kubeconform/cmd/kubeconform \

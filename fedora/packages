@@ -26,7 +26,7 @@ ShellCheck
 
 # Used by the document-skills Claude Code plugin: Word files (pandoc), PDF text
 # and page images (poppler-utils)
-pandoc
+pandoc-cli
 poppler-utils
 
 # Needed by LazyVim (treesitter parsers, Mason); macOS gets them from Xcode tools
