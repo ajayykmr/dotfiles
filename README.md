@@ -8,7 +8,7 @@ clone, so you edit files in the repo and `chezmoi apply` writes them into `~`.
 
 - **Everywhere:** zsh (`.zshrc`, `.zshenv`, `.p10k.zsh`) with Oh My Zsh, Powerlevel10k and
   plugins (cloned on first apply), nvim (LazyVim), Claude Code (settings, plugins, skills,
-  `CLAUDE.md`; see [Claude Code](#claude-code))
+  agents, `CLAUDE.md`; see [Claude Code](#claude-code))
 - **macOS:** apps and CLI tools from `macos/Brewfile`, iTerm2, Rectangle, UnnaturalScrollWheels
 - **Fedora:** dnf packages, Flathub apps and the repos they need, zsh as the login shell
 - **KDE Plasma:** settings (theme, effects, power, input, Konsole), the themes they use,
@@ -182,7 +182,8 @@ and with any claude.ai account.
 | Repo path (`home/private_dot_claude/`) | What it is |
 |---|---|
 | `settings.json` | Settings, the plugin marketplaces (`extraKnownMarketplaces`) and the plugins to turn on (`enabledPlugins`) |
-| `skills/` | My own skills (`fact-check`, `read-gdocs`) |
+| `skills/` | My own skills: `dotfiles` (change files here at the source), `writing-style`, `fact-check`, `read-gdocs` |
+| `agents/` | My own subagents: `doc-reviewer` (runs `fact-check` on a document in a fresh context) |
 | `CLAUDE.md` | Global instructions |
 
 Tools the plugins need are installed with everything else: `gopls` (for `gopls-lsp`) by
@@ -216,6 +217,26 @@ Not in the repo:
 - **A new skill of my own:** add it under `home/private_dot_claude/skills/<name>/` and run
   `chezmoi apply`. To also use it in claude.ai chat, upload it there from the repo copy.
 
+### Web and other assistants
+
+`ai/instructions.md` holds my instructions for chat assistants. For claude.ai ("Instructions
+for Claude" in Settings) or any other assistant, paste it followed by
+`home/private_dot_claude/skills/writing-style/style.md`. Some platforms cap the length of that
+field. On claude.ai, also upload the `fact-check` skill from
+`home/private_dot_claude/skills/fact-check/`.
+
+### Review tools
+
+| To check | Use |
+|---|---|
+| Bugs in a diff, branch or PR | `/code-review` (built in) |
+| Cleanup and simplification | `/simplify` (built in) |
+| Coding standards and match with the spec | `/mattpocock-skills:code-review` (standards need a `CODING_STANDARDS.md`) |
+| Security | `/security-review` (built in), or `/claude-security` for a deep scan |
+| That a change actually works | `/verify`, `/run` (built in) |
+| A document or runbook | "review <doc>" or "fact check <doc>" (`doc-reviewer`) |
+| Shell scripts, Helm charts | `shellcheck`, `helm lint`, `helm template ... \| kubeconform` |
+
 ## How the repo works
 
 ### Layout
@@ -225,7 +246,8 @@ home/                         chezmoi source, maps to ~ (see .chezmoiroot)
   .chezmoi.toml.tmpl          chezmoi config: source dir, re-add hooks
   .chezmoiexternal.toml.tmpl  Oh My Zsh, Powerlevel10k, zsh plugins, CaskaydiaCove font
   .chezmoiscripts/            setup scripts run by apply
-  private_dot_claude/         Claude Code: settings, skills, CLAUDE.md
+  private_dot_claude/         Claude Code: settings, skills, agents, CLAUDE.md
+ai/                           instructions for web chat assistants
 macos/
   Brewfile                    apps and CLI tools
   iterm2/                     iTerm2 prefs, read and written by iTerm2
