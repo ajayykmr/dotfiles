@@ -186,6 +186,10 @@ and with any claude.ai account.
 | `agents/` | My own subagents: `doc-reviewer` (runs `fact-check` on a document in a fresh context) |
 | `CLAUDE.md` | Global instructions |
 
+Third-party skills come from `home/.chezmoiexternal.toml.tmpl`, each pinned to a commit:
+`create-cli` (CLI design, from `steipete/agent-scripts`). To update one, review the upstream
+diff and change the SHA in its URL.
+
 Tools the plugins need are installed with everything else: `gopls` (for `gopls-lsp`) by
 `run_onchange_after_go-tools`, and `pandoc` and `poppler` (for `document-skills`) from
 `macos/Brewfile` and `fedora/packages`.

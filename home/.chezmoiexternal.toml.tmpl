@@ -26,6 +26,16 @@
 [".oh-my-zsh/custom/plugins/zsh-completions"]
   type = "git-repo"
   url = "https://github.com/zsh-users/zsh-completions.git"
+
+# create-cli skill (CLI design, condensed clig.dev) from steipete/agent-scripts, MIT.
+# Pinned to the last commit that changed the skill. To update: review the diff
+# upstream, then change the SHA. exact: files not in the skill are removed.
+[".claude/skills/create-cli"]
+  type = "archive"
+  url = "https://github.com/steipete/agent-scripts/archive/51ee7e5ee6a7df568786125cf5c8107c9ead2317.tar.gz"
+  stripComponents = 3
+  include = ["*/skills/create-cli/**"]
+  exact = true
 {{- if eq .chezmoi.os "linux" }}
 
 # CaskaydiaCove Nerd Font (Cascadia Code with Nerd Font icons), used by Konsole
