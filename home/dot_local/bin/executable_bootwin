@@ -1,4 +1,5 @@
 #!/bin/bash
+# Managed by chezmoi: edit home/dot_local/bin/executable_bootwin in the dotfiles repo, not ~/.local/bin.
 set -euo pipefail
 win=$(efibootmgr | awk '/Windows Boot Manager/ {id=$1; sub(/^Boot/, "", id); sub(/\*$/, "", id); print id; exit}')
 [ -n "$win" ] || { echo "Windows Boot Manager entry not found" >&2; exit 1; }
