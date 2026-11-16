@@ -172,6 +172,20 @@ IDs. On each screen:
 
 For another monitor, use "Clone Panel" in the panel's Edit Mode.
 
+## Dual boot
+
+GRUB stays first in the firmware boot order and boots Fedora with no menu. The scripts switch
+the OS by reordering the firmware boot entries:
+
+| Command | Where | Does |
+|---|---|---|
+| `bootwin` | Fedora (`~/.local/bin`) | puts Windows Boot Manager first with `efibootmgr -o`, then reboots |
+| `bootfed` | Fedora (`~/.local/bin`) | puts Fedora (`shimx64.efi`) first, no reboot |
+| `windows/bootfedora.bat` | Windows (run as admin, self-elevates) | puts Fedora first with `bcdedit`, then restarts |
+
+Needs `GRUB_DEFAULT=0`, `GRUB_TIMEOUT=0` and `GRUB_TIMEOUT_STYLE=hidden` in
+`/etc/default/grub`. A Windows update can reorder the boot entries; run `bootfedora.bat` again.
+
 ## Claude Code
 
 The repo is the source of truth for Claude Code, so the setup is the same on every machine
@@ -260,6 +274,7 @@ fedora/
   packages, flatpaks          dnf packages, Flathub apps
   repos/                      vendor .repo files, COPRs
   prefs/                      KDE settings and Konsole shortcuts
+windows/                      bootfedora.bat, run from Windows (clone the repo there)
 scripts/                      re-add hooks: settings, machine -> repo
 ```
 

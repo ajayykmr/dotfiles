@@ -1,0 +1,7 @@
+#!/bin/bash
+set -euo pipefail
+win=$(efibootmgr | awk '/Windows Boot Manager/ {id=$1; sub(/^Boot/, "", id); sub(/\*$/, "", id); print id; exit}')
+[ -n "$win" ] || { echo "Windows Boot Manager entry not found" >&2; exit 1; }
+rest=$(efibootmgr | awk -F': ' '/^BootOrder/ {print $2}' | tr ',' '\n' | grep -vx "$win" | paste -sd, -)
+sudo /usr/sbin/efibootmgr -o "$win${rest:+,$rest}"
+sudo /usr/sbin/reboot

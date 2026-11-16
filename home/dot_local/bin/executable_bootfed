@@ -1,0 +1,7 @@
+#!/bin/bash
+set -euo pipefail
+fed=$(efibootmgr -v | awk '/shimx64\.efi/ {id=$1; sub(/^Boot/, "", id); sub(/\*$/, "", id); print id; exit}')
+[ -n "$fed" ] || { echo "Fedora shimx64 entry not found" >&2; exit 1; }
+rest=$(efibootmgr | awk -F': ' '/^BootOrder/ {print $2}' | tr ',' '\n' | grep -vx "$fed" | paste -sd, -)
+sudo /usr/sbin/efibootmgr -o "$fed${rest:+,$rest}"
+efibootmgr | grep BootOrder
