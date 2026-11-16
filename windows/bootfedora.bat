@@ -1,4 +1,5 @@
 @echo off
+REM Not managed by chezmoi: run it from a clone of the dotfiles repo on Windows, and edit it in the repo.
 
 net session >nul 2>&1
 if %errorlevel% neq 0 (
