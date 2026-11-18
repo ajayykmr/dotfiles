@@ -1,0 +1,12 @@
+# RPMs that no repo provides, taken from the latest GitHub release and installed by
+# chezmoi apply on Fedora (only the missing ones; never upgrades or removes).
+# One per line, whitespace-separated: <package> <owner/repo> <tag prefix> <asset glob>
+# The script picks the newest release (no prereleases) whose tag starts with the prefix
+# and has an asset matching the glob, and checks the file against the sha256 GitHub
+# lists for that asset.
+# Script: home/.chezmoiscripts/run_onchange_before_fedora-packages.sh.tmpl
+
+# Ente Auth (2FA codes). The ente repo also holds other apps, hence the tag prefix.
+enteauth	ente-io/ente	auth-v	ente-auth-*-x86_64.rpm
+# Motrix (download manager). Provides motrix-turbo.
+motrix-turbo	agalwood/Motrix	v	Motrix-*.x86_64.rpm

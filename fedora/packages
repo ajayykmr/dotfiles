@@ -57,3 +57,7 @@ steam
 
 # Dev
 google-cloud-cli
+
+# Media codecs (RPM Fusion's ffmpeg) and the adb/fastboot tools
+ffmpeg
+android-tools

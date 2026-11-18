@@ -47,4 +47,14 @@
   url = "https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/CascadiaCode.zip"
   exact = true
   include = ["CaskaydiaCoveNerdFont-*.ttf", "CaskaydiaCoveNerdFontMono-*.ttf", "LICENSE"]
+
+# Smart Video Wallpaper Reborn (KDE Plasma wallpaper plugin that plays a video),
+# GPL-3.0. Pinned to a release with its checksum; to update, change the version
+# in the URL and the checksum. stripComponents drops the archive's leading ./. exact: files not in the release are removed.
+[".local/share/plasma/wallpapers/luisbocanegra.smart.video.wallpaper.reborn"]
+  type = "archive"
+  url = "https://github.com/luisbocanegra/plasma-smart-video-wallpaper-reborn/releases/download/v2.17.0/plasma-smart-video-wallpaper-reborn-v2.17.0.tar.gz"
+  stripComponents = 1
+  checksum.sha256 = "25c13564016b495bc20949df0b798e7afd897945b7956a739a9c926b6f9cb9c0"
+  exact = true
 {{- end }}

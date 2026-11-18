@@ -19,7 +19,7 @@
       "Read(//**/.env.*)"
     ]
   },
-  "model": "opus",
+  "model": "sonnet",
   "enabledPlugins": {
     "mattpocock-skills@claude-plugins-official": true,
     "skill-creator@claude-plugins-official": true,

@@ -99,6 +99,7 @@ removes anything:
 - RPM Fusion (free and nonfree), the vendor repos in `fedora/repos/*.repo` and the COPRs in
   `fedora/repos/coprs`
 - dnf packages from `fedora/packages`
+- RPMs that no repo provides, from `fedora/rpms` (latest GitHub release)
 - Flathub (with Fedora's filter removed) and the apps in `fedora/flatpaks`
 - zsh as the login shell
 
@@ -164,7 +165,7 @@ chezmoi execute-template < "$(chezmoi source-path)/.chezmoiscripts/run_onchange_
 
 ### Manual steps
 
-Wallpapers and the panel layout aren't synced: Plasma stores panels per screen, with internal
+Wallpapers (desktop, lock screen and login screen) and the panel layout aren't synced: Plasma stores panels per screen, with internal
 IDs. On each screen:
 
 - Top bar: application launcher, global menu, clock in the center, system tray
@@ -274,7 +275,7 @@ macos/
   iterm2/                     iTerm2 prefs, read and written by iTerm2
   prefs/                      app settings as plists, and the list of synced apps
 fedora/
-  packages, flatpaks          dnf packages, Flathub apps
+  packages, flatpaks, rpms    dnf packages, Flathub apps, vendor RPMs
   repos/                      vendor .repo files, COPRs
   prefs/                      KDE settings and Konsole shortcuts
 windows/                      bootfedora.bat, run from Windows (clone the repo there)

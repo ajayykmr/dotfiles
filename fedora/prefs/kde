@@ -16,11 +16,16 @@ kdeglobals	[General]	XftHintStyle	hintfull
 kdeglobals	[General]	XftSubPixel	rgb
 kdeglobals	[Icons]	Theme	Tela-dark
 kdeglobals	[KFileDialog Settings]	Show hidden files	true
+kdeglobals	[KFileDialog Settings]	View Style	Simple
 
 # Default browser for links opened from other apps
 mimeapps.list	[Default Applications]	text/html	brave-browser.desktop
 mimeapps.list	[Default Applications]	x-scheme-handler/http	brave-browser.desktop
 mimeapps.list	[Default Applications]	x-scheme-handler/https	brave-browser.desktop
+
+# Default PDF viewer and audio player
+mimeapps.list	[Default Applications]	application/pdf	brave-browser.desktop;
+mimeapps.list	[Default Applications]	audio/mp4	vlc.desktop;
 
 # Default video player: VLC for common formats (mp4/m4v, mkv, webm, mov, avi, wmv,
 # mpg, flv). Each type is the canonical one from shared-mime-info
@@ -112,11 +117,14 @@ klipperrc	[General]	MaxClipItems	200
 klipperrc	[General]	SaveImages	true
 
 # Notifications
-plasmanotifyrc	[Notifications]	PopupPosition	TopRight
-plasmanotifyrc	[Notifications]	PopupTimeout	3000
+plasmanotifyrc	[Notifications]	PopupPosition	(default)
+plasmanotifyrc	[Notifications]	PopupTimeout	(default)
+plasmanotifyrc	[Jobs]	PermanentPopups	false
 
 # Dolphin
 dolphinrc	[General]	AutoExpandFolders	true
+dolphinrc	[IconsMode]	PreviewSize	176
+dolphinrc	[Notification Messages]	ConfirmRenameFileType	false
 
 # KRunner
 krunnerrc	[General]	FreeFloating	true
@@ -125,3 +133,7 @@ krunnerrc	[General]	FreeFloating	true
 # Fedora's UseOfflineUpdates default)
 PlasmaDiscoverUpdates	[Global]	UseUnattendedUpdates	true
 PlasmaDiscoverUpdates	[Global]	RequiredNotificationInterval	604800
+
+# Lock screen: lock after 10 minutes, hide the clock while idle
+kscreenlockerrc	[Daemon]	Timeout	10
+kscreenlockerrc	[Greeter][LnF][General]	hideClockWhenIdle	true

@@ -1,12 +1,13 @@
 {{ if and (eq .chezmoi.os "linux") (eq .chezmoi.osRelease.id "fedora") -}}
 #!/bin/sh
-# Install what's missing from fedora/packages and fedora/flatpaks, with the
+# Install what's missing from fedora/packages, fedora/rpms and fedora/flatpaks, with the
 # repos they need. Never upgrades or removes anything. Also makes zsh the
 # login shell. Asks for the sudo password. Re-runs whenever one of these
 # files changes:
 {{- $fedora := joinPath .chezmoi.workingTree "fedora" }}
 # packages {{ include (joinPath $fedora "packages") | sha256sum }}
 # flatpaks {{ include (joinPath $fedora "flatpaks") | sha256sum }}
+# rpms {{ include (joinPath $fedora "rpms") | sha256sum }}
 {{- range $repo := glob (joinPath $fedora "repos/*") }}
 # repos/{{ base $repo }} {{ include $repo | sha256sum }}
 {{- end }}
@@ -54,6 +55,41 @@ if [ -n "$missing" ]; then
   # shellcheck disable=SC2086
   sudo dnf install -y $missing
 fi
+
+# RPMs without a repo (fedora/rpms): find the latest GitHub release, download the
+# asset, check it against the sha256 GitHub lists, install.
+rpms_dir=$(mktemp -d)
+list "$fedora_dir/rpms" > "$rpms_dir/list"
+while read -r pkg repo prefix glob; do
+  rpm -q --whatprovides "$pkg" >/dev/null 2>&1 && continue
+  echo "rpm: looking up the latest $pkg"
+  found=$(curl -fsSL "https://api.github.com/repos/$repo/releases?per_page=100" |
+    python3 -I -c '
+import fnmatch, json, sys
+prefix, glob = sys.argv[1:]
+for r in json.load(sys.stdin):
+    if r["draft"] or r["prerelease"] or not r["tag_name"].startswith(prefix):
+        continue
+    for a in r["assets"]:
+        if fnmatch.fnmatch(a["name"], glob):
+            print(a["browser_download_url"], (a.get("digest") or "").removeprefix("sha256:"))
+            sys.exit(0)
+' "$prefix" "$glob") || found=""
+  url=${found% *}
+  sum=${found##* }
+  if [ -z "$url" ] || [ "$url" = "$sum" ]; then
+    echo "rpm: no release with a checksum found for $pkg, not installing it" >&2
+    continue
+  fi
+  file="$rpms_dir/${url##*/}"
+  curl -fsSL -o "$file" "$url"
+  if [ "$(sha256sum "$file" | cut -d' ' -f1)" != "$sum" ]; then
+    echo "rpm: checksum mismatch for $pkg, not installing it" >&2
+    continue
+  fi
+  sudo dnf install -y "$file"
+done < "$rpms_dir/list"
+rm -rf "$rpms_dir"
 
 # Flathub, unfiltered (Fedora adds it with a filter that hides some apps).
 if ! flatpak remotes --system --columns=name | grep -qx flathub; then
