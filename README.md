@@ -179,9 +179,12 @@ the OS by reordering the firmware boot entries:
 
 | Command | Where | Does |
 |---|---|---|
-| `bootwin` | Fedora (`~/.local/bin`) | puts Windows Boot Manager first with `efibootmgr -o`, then reboots |
-| `bootfed` | Fedora (`~/.local/bin`) | puts Fedora (`shimx64.efi`) first, no reboot |
+| `bootwindows` | Fedora (`~/.local/bin`) | puts Windows Boot Manager first with `efibootmgr -o`, then reboots |
+| `bootfedora` | Fedora (`~/.local/bin`) | puts Fedora (`shimx64.efi`) first, no reboot |
 | `windows/bootfedora.bat` | Windows (run as admin, self-elevates) | puts Fedora first with `bcdedit`, then restarts |
+
+The two Fedora commands also have application menu entries, "Fedora: Set Default" and
+"Windows: Set Default and Reboot" (`home/dot_local/private_share/applications/`).
 
 Needs `GRUB_DEFAULT=0`, `GRUB_TIMEOUT=0` and `GRUB_TIMEOUT_STYLE=hidden` in
 `/etc/default/grub`. A Windows update can reorder the boot entries; run `bootfedora.bat` again.

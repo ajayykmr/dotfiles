@@ -1,5 +1,5 @@
 #!/bin/bash
-# Managed by chezmoi: edit home/dot_local/bin/executable_bootfed in the dotfiles repo, not ~/.local/bin.
+# Managed by chezmoi: edit home/dot_local/bin/executable_bootfedora in the dotfiles repo, not ~/.local/bin.
 set -euo pipefail
 fed=$(efibootmgr -v | awk '/shimx64\.efi/ {id=$1; sub(/^Boot/, "", id); sub(/\*$/, "", id); print id; exit}')
 [ -n "$fed" ] || { echo "Fedora shimx64 entry not found" >&2; exit 1; }
