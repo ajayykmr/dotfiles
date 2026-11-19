@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Claude Code PreToolUse hook for Bash: block `git push` in any form
+# (git push, git -C <dir> push, cd x && git push, env X=1 git push, bash -c 'git push').
+# Exit 2 blocks the command and shows stderr to Claude.
+# Known false positive: any command whose text contains `git push`, even quoted
+# (echo "git push", git commit -m "fix git push"), is blocked. A regex can't tell that
+# from bash -c 'git push', and over-blocking is the safe side. Use git commit -F <file>.
+
+command -v jq >/dev/null || { echo "block-git-push: jq is missing, blocking" >&2; exit 2; }
+
+command=$(jq -r '.tool_input.command // empty')
+
+start='(^|[;&|(){}`"'"'"'$]|[[:space:]])'
+prefix='((sudo|command|env|exec|nohup|time|[A-Za-z_][A-Za-z0-9_]*=[^[:space:]]*)[[:space:]]+)*'
+arg='("[^"]*"|'"'"'[^'"'"']*'"'"'|[^[:space:]]+)'
+opts="([[:space:]]+(-C|-c|--git-dir|--work-tree|--namespace|--config-env)[[:space:]]+${arg}|[[:space:]]+-[^[:space:]]+)*"
+pattern="${start}${prefix}([^[:space:]]*/)?git${opts}[[:space:]]+push([[:space:];&|)\`\"']|$)"
+
+if [[ $command =~ $pattern ]]; then
+  echo "git push is blocked by a hook. The user pushes: tell them what to push instead." >&2
+  exit 2
+fi
+exit 0

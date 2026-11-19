@@ -16,7 +16,21 @@
     ],
     "deny": [
       "Read(//**/.env)",
-      "Read(//**/.env.*)"
+      "Read(//**/.env.*)",
+      "Bash(git push:*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME\"/.claude/hooks/block-git-push"
+          }
+        ]
+      }
     ]
   },
   "model": "sonnet",

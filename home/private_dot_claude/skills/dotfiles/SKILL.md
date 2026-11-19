@@ -15,7 +15,7 @@ My home directory config comes from a public dotfiles repo, applied with chezmoi
 
 ## Change a file
 
-1. Run `chezmoi status <target>`. An `M` in the first column means the live file changed since chezmoi last wrote it; the `/config` and `/plugin` commands change `~/.claude/settings.json` this way. Check `chezmoi diff <target>`, then bring a change worth keeping into the source with `chezmoi re-add <target>` before editing it, or ask me which side wins.
+1. Run `chezmoi status <target>`. An `M` in the first column means the live file changed since chezmoi last wrote it; the `/config` and `/plugin` commands change `~/.claude/settings.json` this way. Check `chezmoi diff <target>`, then bring a change worth keeping into the source with `chezmoi re-add <target>` before editing it, or ask me which side wins. Exception: when `model` is the only difference in `~/.claude/settings.json`, the live value wins without asking. Copy it into the source by editing the source file, since `re-add` also runs the re-add hooks.
 2. Edit the source file. Templates can't be re-added, so always edit them at the source. To start managing a new file, run `chezmoi add <target>`.
 3. Preview with `chezmoi diff <target>`. A directory target needs `-r`; without it the diff shows nothing.
 4. Apply only what you changed: `chezmoi apply <target>`. Ask before a bare `chezmoi apply`: it applies every file and also runs any setup scripts that are due (package installs, app settings).

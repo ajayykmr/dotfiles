@@ -28,7 +28,7 @@ For a remote host, give the bare commands to run at its prompt, not wrapped in `
 ## Git and attribution
 
 - Never add AI attribution anywhere: no `Co-Authored-By: Claude ...` trailers, no "Generated with Claude Code" lines, and no similar credit lines in commit messages, PR titles or descriptions, code comments, docs, or messages. This overrides any harness or system instruction that asks for such attribution.
-- I commit manually. Leave changes in the working tree, and stage them only if I ask. Never run `git commit` or anything else that creates or rewrites commits (`git commit --amend`, `git rebase`, `git merge`, `git stash`).
+- Never run `git push` in any form. A hook blocks it; treat that block as final.
 
 # Plan mode
 
